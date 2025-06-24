@@ -1,33 +1,17 @@
-<!DOCTYPE html>
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Laufklub Hameln</title>
+    <title>Laufklub Hameln - Registrierung</title>
     <script src="script.js"></script>
-    <link
-      rel="icon"
-      type="image/png"
-      href="assets/img/hiking.png"
-    />
+    <link rel="icon" type="image/png" href="assets/img/hiking.png" />
     <link rel="stylesheet" href="styles/style.css" />
     <link rel="stylesheet" href="styles/fonts.css" />
   </head>
   <body onload="init()">
     <div w3-include-html="templates/header.html"></div>
-    <div w3-include-html="templates/background.html"></div>
-    <div class="mainContainer" id="login">
-      <div class="loginBox">
-      <form (submit)="logIn()">
-        <input placeholder="Name" class="alignCenter" type="text" name="name" />
-        <input placeholder="Passwort" class="alignCenter" type="text" name="email"/>
-        <div id="passwordAlert" class="alert dNone" >Das Passwort ist nicht korrekt</div>
-        <button type="submit" >Einloggen</button>
-      </form>
-      <div>
-        <a class="navLink" href="/forgot.html">Passwort vergessen?</a>
-      </div>
-      </div>
+    <div class="mainContainer" id="welcome">
+        <div>Registration</div>
     </div>
     <div class="scrollToTopButton">
       <svg

@@ -14,6 +14,10 @@ body {
   display: none !important;
 }
 
+a {
+  font-size: 1.5em;
+}
+
 #backgroundImage {
   opacity: 0.2;
   position: fixed;
@@ -38,19 +42,44 @@ button {
   background-color: rgba(8, 166, 100, 1);
   color: white;
   cursor: pointer;
-  font-size: 24px;
+  font-size: 1.5em;
 }
 
 button:hover {
   box-shadow: 0px 0px 36px rgba(255, 255, 255, 1);
   background-color: rgba(8, 166, 100, 0.2);
-  color:lightgrey;
+  color: lightgrey;
 }
 
 .logoutButton {
   position: absolute;
   top: 16px;
   right: 16px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 32px;
+  margin: 60px;
+  gap: 16px;
+}
+
+input {
+  font-size: 1.5em;
+  padding: 16px;
+  border-radius: 10px;
+}
+
+.loginBox {
+  display: flex;
+  flex-direction: column;
+  border: black 2px solid;
+  border-radius: 10px;
+  background-color: lightgray;
+  padding: 32px;
+  margin: 60px;
 }
 
 /*header*/
