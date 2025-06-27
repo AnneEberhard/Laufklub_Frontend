@@ -1,1 +1,4 @@
 /assets
+/node_modules
+firebase-config.js
+/backup/firebase-config.js

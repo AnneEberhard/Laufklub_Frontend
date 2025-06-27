@@ -4,5 +4,5 @@
   font-family: 'ABeeZee';
   font-style: normal;
   font-weight: 400;
-  src: url('.styles/fonts/abeezee-v22-latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url('/assets/fonts/abeezee-v22-latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }

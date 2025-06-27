@@ -4,29 +4,29 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Laufklub Hameln</title>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
     <script src="script.js"></script>
-    <link
-      rel="icon"
-      type="image/png"
-      href="assets/img/hiking.png"
-    />
+    <link rel="icon" type="image/png" href="assets/img/hiking.png" />
     <link rel="stylesheet" href="styles/style.css" />
     <link rel="stylesheet" href="styles/fonts.css" />
   </head>
-  <body onload="init()">
+  <body onload="includeHTML()">
     <div w3-include-html="templates/header.html"></div>
     <div w3-include-html="templates/background.html"></div>
     <div class="mainContainer" id="login">
       <div class="loginBox">
-      <form (submit)="logIn()">
-        <input placeholder="Name" class="alignCenter" type="text" name="name" />
-        <input placeholder="Passwort" class="alignCenter" type="text" name="email"/>
-        <div id="passwordAlert" class="alert dNone" >Das Passwort ist nicht korrekt</div>
-        <button type="submit" >Einloggen</button>
-      </form>
-      <div>
-        <a class="navLink" href="/forgot.html">Passwort vergessen?</a>
-      </div>
+        <h3>Login</h3>
+        <input id="email" type="email" placeholder="E-Mail" />
+        <input id="password" type="password" placeholder="Passwort" />
+        <button onclick="login()">Einloggen</button>
+        <button onclick="register()">Registrieren</button>
+        <button onclick="resetPassword()">Passwort vergessen?</button>
+
+        <div id="auth-status"></div>
+        F
       </div>
     </div>
     <div class="scrollToTopButton">
