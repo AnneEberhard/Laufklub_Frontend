@@ -9,54 +9,17 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
     <script src="script.js"></script>
+
     <link rel="icon" type="image/png" href="assets/img/hiking.png" />
     <link rel="stylesheet" href="styles/style.css" />
     <link rel="stylesheet" href="styles/fonts.css" />
   </head>
-  <body onload="includeHTML()">
+  <body onload="init()">
     <div w3-include-html="templates/header.html"></div>
     <div w3-include-html="templates/background.html"></div>
-    <div class="mainContainer" id="login">
-      <div class="loginBox">
-        <h3>Login</h3>
-        <input id="email" type="email" placeholder="E-Mail" />
-        <input id="password" type="password" placeholder="Passwort" />
-        <button onclick="login()">Einloggen</button><br />
-        <div class="buttonBelow">
-          <button class="red" onclick="openRegisterModal()">
-            Registrieren
-          </button>
-          <button class="red" onclick="resetPassword()">
-            Passwort vergessen?
-          </button>
-        </div>
-
-        <div id="auth-status"></div>
-      </div>
-      <div id="registerModal" class="modal" style="display: none">
-        <div class="modal-content">
-          <h3>Registrieren</h3>
-          <input id="regEmail" type="email" placeholder="E-Mail" />
-          <input
-            id="regPassword1"
-            type="password"
-            placeholder="Passwort (min. 8 Zeichen)"
-          />
-          <input
-            id="regPassword2"
-            type="password"
-            placeholder="Passwort wiederholen"
-          />
-          <div id="regError" style="color: red"></div>
-          <div class="buttonBox">
-            <button onclick="submitRegistration()">Registrieren</button>
-            <button class="red" onclick="closeRegisterModal()">
-              Abbrechen
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <div id="adminLinks"></div>
+    <button class="logoutButton" onclick="logout()">Log Out</button>
+    <div class="mainContainer" id="touren"></div>
     <div class="scrollToTopButton">
       <svg
         onclick="scrollToTop()"

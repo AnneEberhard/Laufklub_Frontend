@@ -4,21 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Laufklub Hameln</title>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-    <script src="firebase-config.js"></script>
     <script src="script.js"></script>
 
     <link rel="icon" type="image/png" href="assets/img/hiking.png" />
     <link rel="stylesheet" href="styles/style.css" />
     <link rel="stylesheet" href="styles/fonts.css" />
   </head>
-  <body onload="init()">
+  <body onload="includeHTML()">
     <div w3-include-html="templates/header.html"></div>
     <div w3-include-html="templates/background.html"></div>
-    <button class="logoutButton" onclick="logout()">Log Out</button>
-    <div class="mainContainer" id="touren"></div>
+    <div class="mainContainer" id="touren">
+      <h2>Herzlich Willkommen!</h2>
+      <span>Wir sind der Laufklub Hameln...</span>
+      <a class="buttonLink" href="/login.html">Anmelden</a>
+    </div>
     <div class="scrollToTopButton">
       <svg
         onclick="scrollToTop()"
