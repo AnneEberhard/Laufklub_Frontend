@@ -140,7 +140,7 @@ function renderTour(tour, isAdmin) {
 function renderAdminLinks(tour, isAdmin) {
   const container = document.getElementById("adminLinks");
   container.innerHTML = `
-  ${isAdmin ? "<a target='_blank' class='buttonLink' href='/neu.html'>Neue Tour anlegen</a>" : ""}
+  ${isAdmin ? "<a target='_blank' class='buttonLeft' href='/neu.html'>Neue Tour anlegen</a>" : ""}
   ${isAdmin ? "<button id='editTourButton'>Tour bearbeiten</button>" : ""}`;
   document
     .getElementById("editTourButton")
@@ -302,7 +302,7 @@ function renderArchiveTour(tour) {
     month: "2-digit",
     year: "numeric",
   });
-  container.innerHTML = `
+  container.innerHTML += `
   <div class='tour'>
     <h2>${tour.name}</h2>
      <h3>${formattedDate}</h3>
@@ -402,7 +402,7 @@ function logout() {
     .signOut()
     .then(() => {
       console.log("Erfolgreich ausgeloggt.");
-      window.location.href = "login.html";
+      window.location.href = "index.html";
     })
     .catch((error) => {
       console.error("Fehler beim Logout:", error);

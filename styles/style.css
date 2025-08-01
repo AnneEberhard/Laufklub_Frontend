@@ -51,7 +51,7 @@ button:hover {
   background-color: rgb(166, 66, 8) !important;
 }
 
-.logoutButton {
+.buttonRight {
   position: absolute;
   top: 16px;
   right: 16px;
@@ -111,7 +111,7 @@ textarea {
   align-items: center;
 }
 
-.buttonLink {
+.buttonLeft {
   position: absolute;
   color: white;
   background-color: #08a664;
@@ -173,7 +173,7 @@ header {
   background-color: rgba(8, 166, 100, 0.1);
   width: 100vw;
   box-sizing: border-box;
-  padding: 60px 16px 32px 16px;
+  padding: 40px 16px 32px 16px;
   display: flex;
   color: rgba(8, 166, 100, 1);
   align-items: center;
@@ -185,6 +185,11 @@ header {
   position: absolute;
   top: 32px;
   left: 32px;
+}
+
+.nonDeco {
+  text-decoration: none;
+  color: rgba(8, 166, 100, 1);
 }
 
 #subHeader {
