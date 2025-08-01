@@ -14,6 +14,7 @@ async function checkLogIn() {
       console.log("Aktueller Benutzer:", user.email);
     } else {
       console.log("Nicht eingeloggt");
+      window.location.href = "index.html";
     }
   });
 }
@@ -99,7 +100,7 @@ function renderTour(tour, isAdmin) {
     month: "2-digit",
     year: "numeric",
   });
-  container.innerHTML = `
+  container.innerHTML += `
   <div class='tour'>
     <h2>${tour.name}</h2>
      <h3>${formattedDate}</h3>
@@ -140,7 +141,7 @@ function renderTour(tour, isAdmin) {
 function renderAdminLinks(tour, isAdmin) {
   const container = document.getElementById("adminLinks");
   container.innerHTML = `
-  ${isAdmin ? "<a target='_blank' class='buttonLeft' href='/neu.html'>Neue Tour anlegen</a>" : ""}
+  ${isAdmin ? "<a target='_blank' class='buttonLink left' href='/neu.html'>Neue Tour anlegen</a>" : ""}
   ${isAdmin ? "<button id='editTourButton'>Tour bearbeiten</button>" : ""}`;
   document
     .getElementById("editTourButton")
