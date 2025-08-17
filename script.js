@@ -58,7 +58,7 @@ function loadLatestTour() {
 }
 
 async function loadRegistrations(tour) {
-  const list = document.getElementById("anmeldeliste");
+  const list = document.getElementById(`anmeldeliste-${tour.id}`);
   list.innerHTML = "<li>Wird geladen...</li>";
   console.log("Lade Anmeldungen für Tour-ID:", tour.id);
 
@@ -92,6 +92,7 @@ async function loadRegistrations(tour) {
 }
 
 // Tour anzeigen
+
 function renderTour(tour, isAdmin) {
   const container = document.getElementById("touren");
   const dateObj = tour.date.toDate ? tour.date.toDate() : new Date(tour.date);
@@ -100,43 +101,98 @@ function renderTour(tour, isAdmin) {
     month: "2-digit",
     year: "numeric",
   });
+
+  // Prüfen, ob PDF vorhanden
+  const pdfSection = tour.pdfUrl
+    ? `
+      <h3>PDF anzeigen / herunterladen:</h3>
+      <iframe src="${tour.pdfUrl}" width="100%" height="400px"></iframe>
+      <p><a href="${tour.pdfUrl}" target="_blank" download>PDF herunterladen</a></p>
+    `
+    : "";
+
   container.innerHTML += `
-  <div class='tour'>
-    <h2>${tour.name}</h2>
-     <h3>${formattedDate}</h3>
-    <p>${tour.description}</p>
-      ${
-        tour.link
-          ? `<a href='${tour.link}' target="_blank">Link zur Karte</a>`
-          : ""
-      }
-      <form id="anmeldung-form">
-      <h3>Anmeldung</h3>
+    <div class='tour'>
+      <h2>${tour.name}</h2>
+      <h3>${formattedDate}</h3>
+      <p>${tour.description}</p>
+      ${pdfSection}
+
+      <form id="anmeldung-form-${tour.id}">
+        <h3>Anmeldung</h3>
         <input placeholder="Name" type="text" name="name" required><br>
         <label><input type="radio" name="fahrt" value="big" checked> Große Fahrt</label>
         <label><input type="radio" name="fahrt" value="small"> Kleine Fahrt</label><br>
-
         <button type="submit">Anmelden</button>
       </form>
 
       <h3>Bereits angemeldet:</h3>
-      <ul id="anmeldeliste"></ul>
+      <ul id="anmeldeliste-${tour.id}"></ul>
     </div>
   `;
+
+  // EventListener für das Formular
   document
-    .getElementById("anmeldung-form")
+    .getElementById(`anmeldung-form-${tour.id}`)
     .addEventListener("submit", function (e) {
       e.preventDefault();
       const name = this.name.value.trim();
       const selected = document.querySelector(
-        'input[name="fahrt"]:checked'
+        `input[name="fahrt"]:checked`
       ).value;
 
-      registerForTour(tour.id, name, selected); // Übergibt ganze Tour und Auswahl
+      registerForTour(tour.id, name, selected);
     });
 
   loadRegistrations(tour);
 }
+
+
+//function renderTour(tour, isAdmin) {
+//  const container = document.getElementById("touren");
+//  const dateObj = tour.date.toDate ? tour.date.toDate() : new Date(tour.date);
+//  const formattedDate = dateObj.toLocaleString("de-DE", {
+//    day: "2-digit",
+//    month: "2-digit",
+//    year: "numeric",
+//  });
+//  container.innerHTML += `
+//  <div class='tour'>
+//    <h2>${tour.name}</h2>
+//     <h3>${formattedDate}</h3>
+//    <p>${tour.description}</p>
+//      ${
+//        tour.link
+//          ? `<a href='${tour.link}' target="_blank">Link zur Karte</a>`
+//          : ""
+//      }
+//      <form id="anmeldung-form">
+//      <h3>Anmeldung</h3>
+//        <input placeholder="Name" type="text" name="name" required><br>
+//        <label><input type="radio" name="fahrt" value="big" checked> Große Fahrt</label>
+//        <label><input type="radio" name="fahrt" value="small"> Kleine Fahrt</label><br>
+//
+//        <button type="submit">Anmelden</button>
+//      </form>
+//
+//      <h3>Bereits angemeldet:</h3>
+//      <ul id="anmeldeliste"></ul>
+//    </div>
+//  `;
+//  document
+//    .getElementById("anmeldung-form")
+//    .addEventListener("submit", function (e) {
+//      e.preventDefault();
+//      const name = this.name.value.trim();
+//      const selected = document.querySelector(
+//        'input[name="fahrt"]:checked'
+//      ).value;
+//
+//      registerForTour(tour.id, name, selected); // Übergibt ganze Tour und Auswahl
+//    });
+//
+//  loadRegistrations(tour);
+//}
 
 function renderAdminLinks(tour, isAdmin) {
   const container = document.getElementById("adminLinks");
@@ -247,29 +303,89 @@ function handleCreateTour(e) {
   const name = document.getElementById("tourName").value.trim();
   const date = document.getElementById("tourDate").value;
   const description = document.getElementById("tourDescription").value.trim();
+  const fileInput = document.getElementById("tourFile");
+  const file = fileInput.files[0];
 
   if (!name || !date) {
     alert("Bitte fülle alle Pflichtfelder aus.");
     return;
   }
 
-  db.collection("tours")
-    .add({
-      name: name,
-      date: new Date(date),
-      description: description,
-      createdBy: firebase.auth().currentUser?.uid || null,
-      createdAt: new Date().toISOString(),
-    })
-    .then(() => {
-      alert("Tour erfolgreich angelegt.");
-      window.close();
-    })
-    .catch((error) => {
-      console.error("Fehler beim Anlegen der Tour:", error);
-      alert("Fehler beim Speichern.");
-    });
+  const userId = firebase.auth().currentUser?.uid || null;
+  const tourData = {
+    name: name,
+    date: new Date(date),
+    description: description,
+    createdBy: userId,
+    createdAt: new Date().toISOString(),
+  };
+
+  if (file) {
+    // GPX-Datei in Storage hochladen
+    const storageRef = firebase.storage().ref();
+    const fileRef = storageRef.child("tours/" + Date.now() + "_" + file.name);
+
+    fileRef
+      .put(file)
+      .then(() => fileRef.getDownloadURL())
+      .then((url) => {
+        tourData.gpxUrl = url;
+
+        return db.collection("tours").add(tourData);
+      })
+      .then(() => {
+        alert("Tour erfolgreich angelegt (mit GPX-Datei).");
+        window.close();
+      })
+      .catch((error) => {
+        console.error("Fehler beim Anlegen der Tour:", error);
+        alert("Fehler beim Speichern.");
+      });
+  } else {
+    // Ohne Datei speichern
+    db.collection("tours")
+      .add(tourData)
+      .then(() => {
+        alert("Tour erfolgreich angelegt.");
+        window.close();
+      })
+      .catch((error) => {
+        console.error("Fehler beim Anlegen der Tour:", error);
+        alert("Fehler beim Speichern.");
+      });
+  }
 }
+
+
+//function handleCreateTour(e) {
+//  e.preventDefault();
+//
+//  const name = document.getElementById("tourName").value.trim();
+//  const date = document.getElementById("tourDate").value;
+//  const description = document.getElementById("tourDescription").value.trim();
+//
+//  if (!name || !date) {
+//    alert("Bitte fülle alle Pflichtfelder aus.");
+//    return;
+//  }
+//
+//  db.collection("tours")
+//    .add({
+//      name: name,
+//      date: new Date(date),
+//      description: description,
+//      createdBy: firebase.auth().currentUser?.uid || null,
+//      createdAt: new Date().toISOString(),
+//    })
+//    .then(() => {
+//      alert("Tour erfolgreich angelegt.");
+//      window.close();
+//    })
+//    .catch((error) => {
+//      console.error("Fehler beim Anlegen der Tour:", error);
+//      alert("Fehler beim Speichern.");
+//    });
+//}
 
 //Archiv
 async function archive() {
