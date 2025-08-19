@@ -44,7 +44,6 @@ function loadLatestTour() {
                   "Fehler beim Abrufen des Benutzerdokuments:",
                   error
                 );
-                renderTour(tour, false); // Fallback
               });
           } else {
             renderTour(tour, false);

@@ -219,6 +219,31 @@ ul {
   gap: 32px;
 }
 
+/*contact*/
+.alert {
+  color: rgb(172,17,37);
+  font-size:12px;
+}
+
+#privacyContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+#privacyContainerBox {
+  height: 24px;
+  width: 24px;
+  border: solid 2px rgb(0,123,109);
+  cursor: pointer;
+}
+
+#privacyContainerBox:hover {
+    box-shadow: 1px 1px 20px 10px rgba(0, 190, 232, 0.2);
+    background-color: rgba(0, 190, 232, 0.2);
+  }
+
 /*register for website*/
 .modal {
   position: fixed;
