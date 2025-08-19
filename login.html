@@ -20,7 +20,10 @@
       <div class="loginBox">
         <h3>Login</h3>
         <input id="email" type="email" placeholder="E-Mail" />
-        <input id="password" type="password" placeholder="Passwort" />
+        <div class="passwordWrapper">
+          <input class="passwordInput" id="password" type="password" placeholder="Passwort" />
+          <button class="passwordButton" type="button" onclick="togglePassword(this)">👁️</button>
+        </div>
         <button onclick="login()">Einloggen</button><br />
         <div class="buttonBelow">
           <button class="red" onclick="openRegisterModal()">
