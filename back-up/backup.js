@@ -346,3 +346,47 @@ async function submitRegistration(email, pw1, name) {
     }
   }
 }
+
+async function loadRegistrations() {
+  const list = document.getElementById(`anmeldeliste`);
+  let tour = currentTour;
+  list.innerHTML = "<li>Wird geladen...</li>";
+
+  db.collection("tours")
+    .doc(tour.id)
+    .collection("registrations")
+    .get()
+    .then((querySnapshot) => {
+      console.log("Docs gefunden:", querySnapshot.size);
+      if (querySnapshot.empty) {
+        list.innerHTML = "<li>Noch niemand angemeldet</li>";
+        return;
+      }
+
+      list.innerHTML = "";
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const typ = data.big ? "Große Fahrt" : "Kleine Fahrt";
+        list.innerHTML += `
+          <li class="registrationItem">
+          <div class="registrationItemTop">
+            <div><strong>${data.name}</strong> – ${typ}</div>
+            <div><button class="red" onclick="unregisterForTour('${
+              tour.id
+            }', '${doc.id}')">Abmelden</button></div>
+            </div>
+            ${
+              data.comment
+                ? `<div class="registrationComment"><em>${data.comment}</em></div>`
+                : ""
+            }          
+            </li>
+            <div class="divider"></div>
+        `;
+      });
+    })
+    .catch((error) => {
+      console.error("Fehler beim Laden der Anmeldungen:", error);
+      list.innerHTML = "<li>Fehler beim Laden</li>";
+    });
+}

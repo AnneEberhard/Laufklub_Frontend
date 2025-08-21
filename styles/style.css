@@ -243,7 +243,7 @@ ul {
 }
 
 .registrationComment {
-  overflow: scroll;
+  overflow: auto;
 }
 
 #adminLinks {
@@ -308,6 +308,13 @@ ul {
   flex-direction: column;
   gap: 4px;
   align-items: stretch;
+}
+
+.editRegistrationModalButtons {
+  width: 100%;
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
 }
 
 .buttonBelow {
@@ -449,7 +456,7 @@ footer {
   width: 90%;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 650px) {
   .mainContainer {
     padding: 16px 20px 16px 20px;
   }
@@ -502,6 +509,10 @@ footer {
 .buttonBelow {
   flex-direction: column;
   gap:8px;
+}
+
+.editRegistrationModalButtons {
+  flex-direction: column;
 }
 
 }

@@ -93,49 +93,6 @@ async function loadLatestTour() {
   }
 }
 
-async function loadRegistrations() {
-  const list = document.getElementById(`anmeldeliste`);
-  let tour = currentTour;
-  list.innerHTML = "<li>Wird geladen...</li>";
-
-  db.collection("tours")
-    .doc(tour.id)
-    .collection("registrations")
-    .get()
-    .then((querySnapshot) => {
-      console.log("Docs gefunden:", querySnapshot.size);
-      if (querySnapshot.empty) {
-        list.innerHTML = "<li>Noch niemand angemeldet</li>";
-        return;
-      }
-
-      list.innerHTML = "";
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        const typ = data.big ? "Große Fahrt" : "Kleine Fahrt";
-        list.innerHTML += `
-          <li class="registrationItem">
-          <div class="registrationItemTop">
-            <div><strong>- ${data.name}</strong> – ${typ}</div>
-            <div><button class="red" onclick="unregisterForTour('${
-              tour.id
-            }', '${doc.id}')">Abmelden</button></div>
-            </div>
-            ${
-              data.comment
-                ? `<div class="registrationComment"><em>${data.comment}</em></div>`
-                : ""
-            }          
-            </li>
-            <div class="divider"></div>
-        `;
-      });
-    })
-    .catch((error) => {
-      console.error("Fehler beim Laden der Anmeldungen:", error);
-      list.innerHTML = "<li>Fehler beim Laden</li>";
-    });
-}
 
 function renderTour() {
   const tour = currentTour;
@@ -176,6 +133,53 @@ function renderTour() {
   loadRegistrations();
 }
 
+async function loadRegistrations() {
+  const list = document.getElementById(`anmeldeliste`);
+  let tour = currentTour;
+  list.innerHTML = "<li>Wird geladen...</li>";
+
+  db.collection("tours")
+    .doc(tour.id)
+    .collection("registrations")
+    .get()
+    .then((querySnapshot) => {
+      console.log("Docs gefunden:", querySnapshot.size);
+      if (querySnapshot.empty) {
+        list.innerHTML = "<li>Noch niemand angemeldet</li>";
+        return;
+      }
+
+      list.innerHTML = "";
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const typ = data.big ? "Große Fahrt" : "Kleine Fahrt";
+        list.innerHTML += `
+          <li class="registrationItem">
+            <div class="registrationItemTop">
+              <div><strong>- ${data.name}</strong> – ${typ}</div>
+              <div>
+                <button onclick="openEditRegistrationModal('${tour.id}', '${doc.id}')">
+                  Bearbeiten
+                </button>
+              </div>
+            </div>
+            ${
+              data.comment
+                ? `<div class="registrationComment"><em>${data.comment}</em></div>`
+                : ""
+            }          
+          </li>
+          <div class="divider"></div>
+        `;
+      });
+    })
+    .catch((error) => {
+      console.error("Fehler beim Laden der Anmeldungen:", error);
+      list.innerHTML = "<li>Fehler beim Laden</li>";
+    });
+}
+
+
 function handleTourRegistration(e) {
   e.preventDefault();
   const form = e.target;
@@ -186,6 +190,89 @@ function handleTourRegistration(e) {
   registerForTour(currentTour.id, name, selected, comment);
   form.reset();
 }
+
+function openEditRegistrationModal(tourId, registrationId) {
+  const modal = document.getElementById("editRegistrationModal");
+
+  db.collection("tours")
+    .doc(tourId)
+    .collection("registrations")
+    .doc(registrationId)
+    .get()
+    .then((doc) => {
+      if (!doc.exists) return;
+
+      const data = doc.data();
+
+      document.getElementById("editTourId").value = tourId;
+      document.getElementById("editRegistrationId").value = registrationId;
+
+      document.getElementById("editName").value = data.name || "";
+      document.querySelector(`input[name="editFahrt"][value="${data.big ? "big" : "small"}"]`).checked = true;
+      document.getElementById("editComment").value = data.comment || "";
+
+      modal.classList.remove("dNone");
+    });
+}
+
+function closeEditModal() {
+  document.getElementById("editRegistrationModal").classList.add("dNone");
+}
+
+
+function handleEditRegistration(event) {
+  event.preventDefault();
+
+  const tourId = document.getElementById("editTourId").value;
+  const registrationId = document.getElementById("editRegistrationId").value;
+
+  const name = document.getElementById("editName").value.trim();
+  const fahrt = document.querySelector('input[name="editFahrt"]:checked').value;
+  const comment = document.getElementById("editComment").value.trim();
+
+  db.collection("tours")
+    .doc(tourId)
+    .collection("registrations")
+    .doc(registrationId)
+    .update({
+      name: name,
+      big: fahrt === "big",
+      comment: comment,
+    })
+    .then(() => {
+      alert("Änderungen gespeichert.");
+      closeEditModal();
+      loadRegistrations();
+    })
+    .catch((err) => {
+      console.error("Fehler beim Aktualisieren:", err);
+      alert("Fehler beim Speichern.");
+    });
+}
+
+function deleteRegistration() {
+  const tourId = document.getElementById("editTourId").value;
+  const registrationId = document.getElementById("editRegistrationId").value;
+
+  if (!confirm("Diese Person wirklich von der Fahrt abmelden?")) return;
+
+  db.collection("tours")
+    .doc(tourId)
+    .collection("registrations")
+    .doc(registrationId)
+    .delete()
+    .then(() => {
+      alert("Abgemeldet.");
+      closeEditModal();
+      loadRegistrations();
+    })
+    .catch((err) => {
+      console.error("Fehler beim Löschen:", err);
+      alert("Fehler beim Abmelden.");
+    });
+}
+
+
 
 // Anmelden für Tour
 async function registerForTour(tourId, name, selected, comment) {
