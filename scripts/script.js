@@ -9,10 +9,9 @@ async function init() {
 }
 
 /**
- * loads data for the global variables
- * menuTitles, navSites, mainSites, overview, pageFunctions
+ * 
+ * 
  */
-
 async function checkUserAdminStatus() {
   return new Promise((resolve, reject) => {
     auth.onAuthStateChanged(async (user) => {
@@ -40,21 +39,37 @@ async function checkUserAdminStatus() {
 
 function renderAdminLinks(isAdmin) {
   const container = document.getElementById("adminLinks");
+  const containerMobile = document.getElementById("adminLinksMobile");
   container.innerHTML = `
+  ${
+    isAdmin
+      ? `
+        <a class="buttonLink" href="/neu.html">Neue Fahrt anlegen</a>
+        <button id="editTourButton" onclick="renderEditForm()">Fahrt bearbeiten</button>
+        <a class="buttonLink" href="/members.html">Mitglieder</a>
+      `
+      : ""
+  }
+`;
+    containerMobile.innerHTML = `
     ${
       isAdmin
-        ? "<a target='_blank' class='buttonLink' href='/neu.html'>Neue Tour anlegen</a>"
+      ? `<button id='editTourButton' onclick="openAdminLinks()">Admin</button>`
         : ""
-    }
-    ${
-      isAdmin
-        ? `<button id='editTourButton' onclick="renderEditForm()">Tour bearbeiten</button>`
-        : ""
-    }
-    ${
-      isAdmin ? "<a class='buttonLink' href='/members.html'>Mitglieder</a>" : ""
-    }
-    `;
+    }`
+}
+
+function openAdminLinks() {
+  document.getElementById("adminLinksMobileMenu").classList.remove("dNone");
+}
+
+function closeMobileAdminLinks() {
+  document.getElementById("adminLinksMobileMenu").classList.add("dNone");
+}
+
+function mobileRenderEditForm() {
+  document.getElementById("adminLinksMobileMenu").classList.add("dNone");
+  renderEditForm();
 }
 
 // Tour page
@@ -108,7 +123,7 @@ async function loadRegistrations() {
             </div>
             ${
               data.comment
-                ? `<div class="registration-comment"><em>${data.comment}</em></div>`
+                ? `<div class="registrationComment"><em>${data.comment}</em></div>`
                 : ""
             }          
             </li>
@@ -133,6 +148,7 @@ function renderTour() {
   });
 
   container.innerHTML = `
+  <h2 class="tourHeader"> Unsere nächste Fahrt: </h2>
     <div class='tour'>
       <h2>${tour.name}</h2>
       <h3>${formattedDate}</h3>
@@ -326,8 +342,10 @@ async function firstLogin() {
 
   const { pending, name } = await checkPendingUser(email);
   if (!pending) {
-    errorBox.textContent =
-      "Sie sind nicht für die Registrierung berechtigt. Bitte kontaktieren Sie uns.";
+    errorBox.innerHTML = `
+    Sie sind nicht für die Registrierung berechtigt. Bitte kontaktieren Sie uns. <br> 
+    Oder sind Sie schon registriert? Dann bitte den normalen Login nutzen.`
+      ;
     return;
   }
 
@@ -417,14 +435,24 @@ async function submitRegistration(email, pw1, name) {
   }
 }
 
+function openForgotModal() {
+  document.getElementById("forgotModal").style.display = "block";
+}
+
+function closeForgotModal() {
+  document.getElementById("forgotModal").style.display = "none";
+  document.getElementById("forgotEmail").innerText = "";
+  document.getElementById("forgotError").innerText = "";
+}
 
 function resetPassword() {
-  const email = document.getElementById("email").value;
+  const email = document.getElementById("forgotEmail").value;
 
   auth
     .sendPasswordResetEmail(email)
     .then(() => {
       alert("Passwort-Zurücksetzungs-E-Mail gesendet");
+      closeForgotModal();
     })
     .catch((error) => {
       alert("Fehler beim Zurücksetzen: " + error.message);

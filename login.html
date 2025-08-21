@@ -18,7 +18,7 @@
     <div w3-include-html="templates/background.html"></div>
     <div class="mainContainer" id="login">
       <div class="loginBox">
-        <h3>Login</h3>
+        <h3>Login für Mitglieder</h3>
         <input id="email" type="email" placeholder="E-Mail" />
         <div class="passwordWrapper">
           <input
@@ -37,10 +37,12 @@
         </div>
         <button onclick="login()">Einloggen</button><br />
         <div class="buttonBelow">
+          <h3>Bei Erstanmeldung</h3>
           <button class="blue" onclick="openRegisterModal()">
             Erstanmeldung
           </button>
-          <button class="red" onclick="resetPassword()">
+          <h3>Bei vergessenem Passwort</h3>
+          <button class="red" onclick="openForgotModal()">
             Passwort vergessen?
           </button>
         </div>
@@ -84,6 +86,21 @@
           <div class="buttonBox">
             <button onclick="firstLogin()">Registrieren</button>
             <button class="red" onclick="closeRegisterModal()">
+              Abbrechen
+            </button>
+          </div>
+        </div>
+      </div>
+        <div id="forgotModal" class="modal" style="display: none">
+        <div class="modal-content">
+          <h3>Passwort vergessen?</h3>
+          <p>Nicht schlimm! Email eingeben, abschicken, und es gibt einen Link zum Neusetzen des Passworts! <br> (E-mail ist auf Englisch)</p>
+          <input id="forgotEmail" type="email" placeholder="E-Mail" />
+       
+          <div id="forgotError" style="color: red"></div>
+          <div class="buttonBox">
+            <button onclick="resetPassword()">Abschicken</button>
+            <button class="red" onclick="closeForgotModal()">
               Abbrechen
             </button>
           </div>

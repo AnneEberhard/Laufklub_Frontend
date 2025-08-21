@@ -19,11 +19,20 @@
     <div w3-include-html="templates/header.html"></div>
     <div w3-include-html="templates/background.html"></div>
     <div id="adminLinks"></div>
-    <button class="buttonLink right" onclick="logout()">Log Out</button>
-      
-    <div class="mainContainer" id="touren">
-      
+    <div id="adminLinksMobile" class="left"></div>
+    <div id="adminLinksMobileMenu" class="dNone">
+      <div class="mobileLinks">
+        <a class="buttonLink" href="/neu.html">Neue Fahrt anlegen</a>
+        <button id="editTourButton" onclick="mobileRenderEditForm()">
+          Fahrt bearbeiten
+        </button>
+        <a class="buttonLink" href="/members.html">Mitglieder</a>
+      </div>
+      <div onclick="closeMobileAdminLinks()" class="exit">X</div>
     </div>
+    <button class="buttonLink right" onclick="logout()">Log Out</button>
+
+    <div class="mainContainer" id="touren"></div>
     <div class="scrollToTopButton">
       <svg
         onclick="scrollToTop()"

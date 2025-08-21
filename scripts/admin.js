@@ -68,7 +68,7 @@ function handleCreateTour(e) {
     })
     .then(() => {
       alert("Tour erfolgreich angelegt.");
-      window.close();
+      window.location.href = "homepage.html";;
     })
     .catch((error) => {
       console.error("Fehler beim Anlegen der Tour:", error);
@@ -250,6 +250,7 @@ function addMember() {
         msg.textContent = "Mitglied erfolgreich vorgemerkt!";
         document.getElementById("memberName").value = "";
         document.getElementById("memberEmail").value = "";
+        window.location.reload();
       }
     })
     .catch((error) => {

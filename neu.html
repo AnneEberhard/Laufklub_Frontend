@@ -17,18 +17,15 @@
     <div w3-include-html="templates/header.html"></div>
     <div w3-include-html="templates/background.html"></div>
     <a class="buttonLink left" href="/homepage.html">Home</a>
+    <button class="buttonLink right" onclick="logout()">Log Out</button>
     <div class="mainContainer">
       <form id="createTourForm" onsubmit="handleCreateTour(event)">
         <h2>Neue Tour anlegen</h2>
-
         <input id="tourName" type="text" placeholder="Name" required />
         <input id="tourDate" type="datetime-local" required />
         <textarea id="tourDescription" placeholder="Beschreibung"></textarea>
-
         <div class="buttonBox">
-          <button type="button" class="red" onclick="window.close();">
-            Abbrechen
-          </button>
+          <a class="buttonLink red" href="/homepage.html">Abbrechen</a>
           <button type="submit">Speichern</button>
         </div>
       </form>

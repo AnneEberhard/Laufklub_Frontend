@@ -23,6 +23,10 @@ a:hover {
   text-shadow: 2px 2px 4px rgb(0, 123, 109);
 }
 
+h3 {
+  text-align: center;
+}
+
 .dNone {
   display: none !important;
 }
@@ -163,6 +167,12 @@ textarea {
   align-items: center;
 }
 
+.tourHeader {
+  text-align: center;
+  margin-bottom: 0px;
+  text-decoration: underline;
+}
+
 .buttonLink {
   color: white;
   background-color: rgb(0, 123, 109);
@@ -205,6 +215,7 @@ ul {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  padding-inline-start: 0;
 }
 
 .divider {
@@ -231,6 +242,10 @@ ul {
   gap: 16px;
 }
 
+.registrationComment {
+  overflow: scroll;
+}
+
 #adminLinks {
   position: absolute;
   top: 16px;
@@ -239,6 +254,10 @@ ul {
   flex-direction: column;
   align-items: stretch;
   gap: 32px;
+}
+
+#adminLinksMobile {
+  display: none;
 }
 
 /*contact*/
@@ -294,6 +313,7 @@ ul {
 .buttonBelow {
   display: flex;
   justify-content: space-around;
+  flex-direction: column;
 }
 
 /*header*/
@@ -427,4 +447,61 @@ footer {
 
 .width90 {
   width: 90%;
+}
+
+@media (max-width: 600px) {
+  .mainContainer {
+    padding: 16px 20px 16px 20px;
+  }
+
+  footer {
+    flex-direction: column;
+  }
+
+  #adminLinks {
+    display: none;
+  }
+
+  #adminLinksMobile {
+    display: flex;
+  }
+
+  #adminLinksMobileMenu {
+    display: flex;
+    background-color: white;
+    position: absolute;
+    top: 0x;
+    left: 0px;
+    right: 0;
+    padding: 32px;
+    z-index: 10;
+    justify-content: space-between;
+  }
+
+  .mobileLinks {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 32px;
+    
+  }
+
+  .exit {
+    border-radius: 100px;
+    background-color: rgb(0,123,109);
+    padding: 8px;
+    color: white;
+    font-weight: 900;
+    max-height: fit-content;
+  }
+
+  .loginBox {
+    margin:8px;
+  }
+
+.buttonBelow {
+  flex-direction: column;
+  gap:8px;
+}
+
 }
