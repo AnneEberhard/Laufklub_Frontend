@@ -1,0 +1,44 @@
+      <form (submit)="sendMail($event)" ngNativeValidate>
+        <input
+          placeholder="Name"
+          class="signUpInput"
+          type="text"
+          name="name"
+          (input)="checkInputFields($event)"
+        />
+        <div class="alert dNone">Der Name ist erforderlich.</div>
+        <input
+          placeholder="E-Mail Adresse"
+          class="signUpInput"
+          type="email"
+          name="email"
+          (input)="checkInputFields($event)"
+        />
+        <div class="alert dNone">Eine gültige E-Mail Adresse ist erforderlich.</div>
+        <textarea
+          class="signUpComment"
+          placeholder="Nachricht"
+          name="message"
+          (input)="checkInputFields($event)"
+        ></textarea>
+        <div class="alert dNone">Das Nachrichtenfeld ist leer.</div>
+
+        <div id="privacyContainer">
+          <div id="privacyContainerBox" (click)="checkPrivacy()"></div>
+          <p>
+            Ich habe die
+            <a target="_blank" class="navLink" href="/Datenschutz.html"
+              >Datenschutzerklärung</a
+            >
+            gelesen und erkläre mich damit einverstanden, dass meine Daten wie
+            beschrieben weitergegeben werden.
+          </p>
+        </div>
+
+        <div class="alert dNone" *ngIf="showPrivacyAlert">
+          Bitte akzeptieren Sie die Datenschutzerklärung.
+        </div>
+        <button type="submit" #sendButton [disabled]="!privacyChecked">
+          Abschicken
+        </button>
+      </form>

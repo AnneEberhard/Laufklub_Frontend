@@ -115,7 +115,6 @@ textarea {
   padding: 16px;
   border-radius: 10px;
   width: 80%;
-  height: 40vh;
 }
 
 .passwordWrapper {
@@ -138,9 +137,9 @@ textarea {
 }
 
 .buttonBox {
-  width: 80%;
+  width: 100%;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
 }
 
 .loginBox {
@@ -172,6 +171,7 @@ textarea {
   cursor: pointer;
   padding: 8px;
   text-decoration: none;
+  text-align: center;
 }
 
 .buttonLink:hover {
@@ -210,6 +210,11 @@ ul {
 .divider {
   background-color: black;
   height: 1px;
+  width: 100%;
+}
+
+.marginTop {
+  margin-top: 14px;
 }
 
 .registrationItem {

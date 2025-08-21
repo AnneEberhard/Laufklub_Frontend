@@ -21,13 +21,24 @@
         <h3>Login</h3>
         <input id="email" type="email" placeholder="E-Mail" />
         <div class="passwordWrapper">
-          <input class="passwordInput" id="password" type="password" placeholder="Passwort" />
-          <button class="passwordButton" type="button" onclick="togglePassword(this)">👁️</button>
+          <input
+            class="passwordInput"
+            id="password"
+            type="password"
+            placeholder="Passwort"
+          />
+          <button
+            class="passwordButton"
+            type="button"
+            onclick="togglePassword(this,'password')"
+          >
+            👁️
+          </button>
         </div>
         <button onclick="login()">Einloggen</button><br />
         <div class="buttonBelow">
-          <button class="red" onclick="openRegisterModal()">
-            Registrieren
+          <button class="blue" onclick="openRegisterModal()">
+            Erstanmeldung
           </button>
           <button class="red" onclick="resetPassword()">
             Passwort vergessen?
@@ -38,21 +49,40 @@
       </div>
       <div id="registerModal" class="modal" style="display: none">
         <div class="modal-content">
-          <h3>Registrieren</h3>
-          <input id="regEmail" type="email" placeholder="E-Mail" />
-          <input
-            id="regPassword1"
-            type="password"
-            placeholder="Passwort (min. 8 Zeichen)"
-          />
-          <input
-            id="regPassword2"
-            type="password"
-            placeholder="Passwort wiederholen"
-          />
-          <div id="regError" style="color: red"></div>
+          <h3>Erstanmeldung für neue Mitglieder</h3>
+          <input id="firstLoginEmail" type="email" placeholder="E-Mail" />
+          <div class="passwordWrapper">
+            <input
+              id="firstLoginPassword1"
+              class="passwordInput"
+              type="password"
+              placeholder="Passwort (min. 8 Zeichen)"
+            />
+            <button
+              class="passwordButton"
+              type="button"
+              onclick="togglePassword(this, 'firstLoginPassword1')"
+            >
+              👁️
+            </button>
+          </div>
+          <div class="passwordWrapper">
+            <input
+              id="firstLoginPassword2"
+              class="passwordInput"
+              type="password"
+              placeholder="Passwort wiederholen"
+            /><button
+              class="passwordButton"
+              type="button"
+              onclick="togglePassword(this, 'firstLoginPassword2')"
+            >
+              👁️
+            </button>
+          </div>
+          <div id="firstLoginError" style="color: red"></div>
           <div class="buttonBox">
-            <button onclick="submitRegistration()">Registrieren</button>
+            <button onclick="firstLogin()">Registrieren</button>
             <button class="red" onclick="closeRegisterModal()">
               Abbrechen
             </button>

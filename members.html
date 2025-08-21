@@ -1,8 +1,9 @@
+<!DOCTYPE html>
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Laufklub Hameln - Archiv</title>
+    <title>Laufklub Hameln</title>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -12,13 +13,26 @@
     <link rel="stylesheet" href="styles/style.css" />
     <link rel="stylesheet" href="styles/fonts.css" />
   </head>
-  <body onload="archive()">
+  <body onload="members()">
     <div w3-include-html="templates/header.html"></div>
     <div w3-include-html="templates/background.html"></div>
-    <a class="buttonLink left" href="/touren.html">Aktuelle Tour</a>
+    <div id="adminLinks"></div>
     <button class="buttonLink right" onclick="logout()">Log Out</button>
-    <div class="mainContainer" id="archive">
-    
+    <a class="buttonLink left" href="/touren.html">Aktuelle Tour</a>
+    <div class="mainContainer">
+      <div id="members"></div>
+      <div id="memberForm">
+        <h3>Neues Mitglied hinzufügen</h3>
+        <input type="text" id="memberName" placeholder="Name" required /><br />
+        <input
+          type="email"
+          id="memberEmail"
+          placeholder="Email"
+          required
+        /><br />
+        <button onclick="addMember()">Hinzufügen</button>
+        <p id="memberMsg"></p>
+      </div>
     </div>
     <div class="scrollToTopButton">
       <svg

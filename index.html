@@ -16,7 +16,7 @@
     <div class="mainContainer" id="touren">
       <h2>Herzlich Willkommen!</h2>
       <span
-        >Wir sind der Laufklub Hameln, eine Gruppe Herren, die durch das
+        >Wir sind der Laufklub Hameln, eine Gruppe geselliger Herren, die mit Freude an Wandern und Gesang alle zwei Wochen durch das
         Weserbergland wandern.</span
       >
       <br /><br />
@@ -305,57 +305,59 @@
       </details>
             <p>
         Wir freuen uns über Mitwanderer, die belastbar sind (10 bis 12km mit
-        Steigungen), die die Schönheit des Weserberglands entdecken wollen und
+        Steigungen), die Schönheit des Weserberglands entdecken wollen und
         Freude an Geselligkeit haben, beim abschließenden gemeinsamen Essen und
         gemeinschaftlichem Singen einfacher Lieder.
       </p>
       <h2>Kontakt</h2>
 
+<form action="kontakt.php" method="post">
+  <!-- Name -->
+  <input
+    placeholder="Name"
+    class="signUpInput"
+    type="text"
+    name="name"
+    required
+  />
+  <div class="alert dNone">Der Name ist erforderlich.</div>
 
-      <form (submit)="sendMail($event)" ngNativeValidate>
-        <input
-          placeholder="Name"
-          class="signUpInput"
-          type="text"
-          name="name"
-          (input)="checkInputFields($event)"
-        />
-        <div class="alert">Der Name ist erforderlich.</div>
-        <input
-          placeholder="E-Mail Adresse"
-          class="signUpInput"
-          type="email"
-          name="email"
-          (input)="checkInputFields($event)"
-        />
-        <div class="alert">Eine gültige E-Mail Adresse ist erforderlich.</div>
-        <textarea
-          class="signUpComment"
-          placeholder="Nachricht"
-          name="message"
-          (input)="checkInputFields($event)"
-        ></textarea>
-        <div class="alert">Das Nachrichtenfeld ist leer.</div>
+  <!-- E-Mail -->
+  <input
+    placeholder="E-Mail Adresse"
+    class="signUpInput"
+    type="email"
+    name="email"
+    required
+  />
+  <div class="alert dNone">Eine gültige E-Mail Adresse ist erforderlich.</div>
 
-        <div id="privacyContainer">
-          <div id="privacyContainerBox" (click)="checkPrivacy()"></div>
-          <p>
-            Ich habe die
-            <a target="_blank" class="navLink" href="/Datenschutz.html"
-              >Datenschutzerklärung</a
-            >
-            gelesen und erkläre mich damit einverstanden, dass meine Daten wie
-            beschrieben weitergegeben werden.
-          </p>
-        </div>
+  <!-- Nachricht -->
+  <textarea
+    class="signUpComment"
+    placeholder="Nachricht"
+    name="message"
+    required
+  ></textarea>
+  <div class="alert dNone">Das Nachrichtenfeld ist leer.</div>
 
-        <div class="alert" *ngIf="showPrivacyAlert">
-          Bitte akzeptieren Sie die Datenschutzerklärung.
-        </div>
-        <button type="submit" #sendButton [disabled]="!privacyChecked">
-          Abschicken
-        </button>
-      </form>
+  <!-- Datenschutz -->
+  <div id="privacyContainer">
+    <input type="checkbox" id="privacy" name="privacy" required />
+    <label for="privacy">
+      Ich habe die
+      <a target="_blank" class="navLink" href="/Datenschutz.html">
+        Datenschutzerklärung
+      </a>
+      gelesen und erkläre mich damit einverstanden.
+    </label>
+  </div>
+
+  <!-- Absenden -->
+  <button type="submit">Abschicken</button>
+</form>
+
+
       <a class="buttonLink right" href="/login.html">Zum Mitgliederportal</a>
     </div>
     <div class="scrollToTopButton">
