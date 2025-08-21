@@ -213,83 +213,7 @@ function unregisterForTour(tourId, registrationId) {
     });
 }
 
-// Edit page
 
-function renderEditForm() {
-  const container = document.getElementById("touren");
-  const tour = currentTour;
-  const dateObj = tour.date.toDate ? tour.date.toDate() : new Date(tour.date);
-  const isoDate = dateObj.toISOString().slice(0, 16);
-
-  container.innerHTML = `
-    <h2>Tour bearbeiten</h2>
-    <form id="editTourForm" onsubmit="handleSaveTour(event)">
-      <input type="text" id="editName" value="${tour.name}" required />
-      <input type="datetime-local" id="editDate" value="${isoDate}" required />
-      <textarea id="editDescription">${tour.description || ""}</textarea>
-      <button type="submit">Speichern</button>
-      <button type="button" onclick="handleCancelEdit()">Abbrechen</button>
-    </form>
-  `;
-}
-
-function handleSaveTour(e) {
-  e.preventDefault();
-
-  const updatedTour = {
-    name: document.getElementById("editName").value.trim(),
-    date: new Date(document.getElementById("editDate").value),
-    description: document.getElementById("editDescription").value.trim(),
-  };
-
-  db.collection("tours")
-    .doc(currentTour.id)
-    .update(updatedTour)
-    .then(() => {
-      alert("Tour aktualisiert!");
-      loadLatestTour();
-    })
-    .catch((err) => {
-      console.error("Fehler beim Aktualisieren:", err);
-      alert("Aktualisierung fehlgeschlagen.");
-    });
-}
-
-function handleCancelEdit() {
-  renderTour(currentTour);
-}
-
-//Neue Tour
-
-function handleCreateTour(e) {
-  e.preventDefault();
-
-  const name = document.getElementById("tourName").value.trim();
-  const date = document.getElementById("tourDate").value;
-  const description = document.getElementById("tourDescription").value.trim();
-
-  if (!name || !date) {
-    alert("Bitte fülle alle Pflichtfelder aus.");
-    return;
-  }
-
-  db.collection("tours")
-    .add({
-      name: name,
-      date: new Date(date),
-      description: description,
-      createdBy: firebase.auth().currentUser?.uid || null,
-      createdAt: new Date().toISOString(),
-    })
-    .then(() => {
-      alert("Tour erfolgreich angelegt.");
-      window.close();
-    })
-    .catch((error) => {
-      console.error("Fehler beim Anlegen der Tour:", error);
-      alert("Fehler beim Speichern.");
-    });
-}
 
 //Archiv
 async function archive() {
@@ -371,7 +295,7 @@ function login() {
   auth
     .signInWithEmailAndPassword(email, password)
     .then((userCredential) => {
-      window.location.href = "touren.html";
+      window.location.href = "homepage.html";
       console.log("Eingeloggt als: " + userCredential.user.email);
     })
     .catch((error) => {
@@ -387,6 +311,29 @@ function closeRegisterModal() {
   document.getElementById("registerModal").style.display = "none";
   document.getElementById("firstLoginError").innerText = "";
 }
+
+async function firstLogin() {
+  const email = document.getElementById("firstLoginEmail").value.trim();
+  const pw1 = document.getElementById("firstLoginPassword1").value;
+  const pw2 = document.getElementById("firstLoginPassword2").value;
+  const errorBox = document.getElementById("firstLoginError");
+
+  const { checkForm, message } = await checkFirstLoginInForm(email, pw1, pw2);
+  if (!checkForm) {
+    errorBox.textContent = message;
+    return;
+  }
+
+  const { pending, name } = await checkPendingUser(email);
+  if (!pending) {
+    errorBox.textContent =
+      "Sie sind nicht für die Registrierung berechtigt. Bitte kontaktieren Sie uns.";
+    return;
+  }
+
+  submitRegistration(email, pw1, name);
+}
+
 function checkFirstLoginInForm(email, pw1, pw2) {
   let message = "";
   if (!email || !pw1 || !pw2) {
@@ -428,45 +375,36 @@ function checkPendingUser(email) {
     });
 }
 
-async function firstLogin() {
-  const email = document.getElementById("firstLoginEmail").value.trim();
-  const pw1 = document.getElementById("firstLoginPassword1").value;
-  const pw2 = document.getElementById("firstLoginPassword2").value;
-  const errorBox = document.getElementById("firstLoginError");
-
-  const { checkForm, message } = await checkFirstLoginInForm(email, pw1, pw2);
-  if (!checkForm) {
-    errorBox.textContent = message;
-    return;
-  }
-
-  const { pending, name } = await checkPendingUser(email);
-  if (!pending) {
-    errorBox.textContent =
-      "Sie sind nicht für die Registrierung berechtigt. Bitte kontaktieren Sie uns.";
-    return;
-  }
-
-  submitRegistration(email, pw1, name);
-}
-
 async function submitRegistration(email, pw1, name) {
   const errorBox = document.getElementById("firstLoginError");
   try {
+    // 1. Firebase-User anlegen
     const cred = await firebase.auth().createUserWithEmailAndPassword(email, pw1);
     const user = cred.user;
 
     await user.updateProfile({ displayName: name });
 
+    // 2. Firestore-Eintrag in "users"
     await db.collection("users").doc(user.uid).set({
       email: user.email,
       isAdmin: false,
       createdAt: new Date().toISOString(),
-      name: name
+      name: name,
     });
 
+    // 3. pendingUser löschen
+    const pendingQuery = await db.collection("pendingUsers")
+      .where("email", "==", email)
+      .get();
+
+    if (!pendingQuery.empty) {
+      const pendingDoc = pendingQuery.docs[0];
+      await db.collection("pendingUsers").doc(pendingDoc.id).delete();
+      console.log("Pending-User gelöscht:", email);
+    }
+
     alert("Registrierung erfolgreich! Eingeloggt als: " + name);
-    window.location.href = "touren.html";
+    window.location.href = "homepage.html";
 
   } catch (err) {
     if (err.code === "auth/email-already-in-use") {
@@ -478,6 +416,7 @@ async function submitRegistration(email, pw1, name) {
     }
   }
 }
+
 
 function resetPassword() {
   const email = document.getElementById("email").value;
@@ -506,86 +445,6 @@ function logout() {
     });
 }
 
-// Members
-async function members() {
-  await includeHTML();
-  const { user, isAdmin } = await checkUserAdminStatus();
-  loadMembers(isAdmin);
-}
-
-function loadMembers(isAdmin) {
-  db.collection("users")
-    .orderBy("email")
-    .get()
-    .then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        const user = { id: doc.id, ...doc.data() };
-        renderMember(user, isAdmin);
-      });
-    })
-    .catch((error) => {
-      console.error("Fehler beim Laden der Mitglieder:", error);
-    });
-}
-
-function renderMember(user, isAdmin) {
-  const container = document.getElementById("members");
-  container.innerHTML += `
-    <div class="member" id="member-${user.id}">
-      <p>Name: ${user.name || "-"}</p>
-      <p>Email: ${user.email}</p>
-      ${user.isAdmin ? "<strong>(Admin)</strong>" : ""}
-      ${
-        isAdmin
-          ? `<button onclick="deleteUser('${user.id}')">Löschen</button>`
-          : ""
-      }
-      <div class="divider marginTop"></div>
-    </div>
-  `;
-}
-
-function addMember() {
-  const name = document.getElementById("memberName").value.trim();
-  const email = document.getElementById("memberEmail").value.trim();
-  const msg = document.getElementById("memberMsg");
-
-  msg.textContent = "";
-
-  if (!name || !email) {
-    msg.textContent = "Bitte Name und Email eingeben.";
-    return;
-  }
-
-  // prüfen, ob E-Mail bereits in pendingUsers existiert
-  db.collection("pendingUsers")
-    .where("email", "==", email)
-    .get()
-    .then((snapshot) => {
-      if (!snapshot.empty) {
-        msg.textContent = "Diese Email ist bereits vorgemerkt.";
-        return;
-      }
-
-      // neuen pendingUser eintragen
-      return db.collection("pendingUsers").add({
-        name: name,
-        email: email,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      });
-    })
-    .then((docRef) => {
-      if (docRef) {
-        msg.textContent = "Mitglied erfolgreich vorgemerkt!";
-        document.getElementById("memberName").value = "";
-        document.getElementById("memberEmail").value = "";
-      }
-    })
-    .catch((error) => {
-      console.error("Fehler beim Hinzufügen: ", error);
-      msg.textContent = "Fehler beim Hinzufügen: " + error.message;
-    });
-}
 
 /**
  * includes the HTML templates

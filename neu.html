@@ -7,7 +7,8 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
-    <script src="script.js"></script>
+    <script src="scripts/script.js"></script>
+    <script src="scripts/admin.js"></script>
     <link rel="icon" type="image/png" href="assets/img/hiking.png" />
     <link rel="stylesheet" href="styles/style.css" />
     <link rel="stylesheet" href="styles/fonts.css" />
@@ -15,7 +16,7 @@
   <body onload="includeHTML(), checkLogIn()">
     <div w3-include-html="templates/header.html"></div>
     <div w3-include-html="templates/background.html"></div>
-    <a class="buttonLink left" href="/touren.html">Home</a>
+    <a class="buttonLink left" href="/homepage.html">Home</a>
     <div class="mainContainer">
       <form id="createTourForm" onsubmit="handleCreateTour(event)">
         <h2>Neue Tour anlegen</h2>

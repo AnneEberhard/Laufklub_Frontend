@@ -8,7 +8,8 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
-    <script src="script.js"></script>
+    <script src="scripts/script.js"></script>
+    <script src="scripts/admin.js"></script>
     <link rel="icon" type="image/png" href="assets/img/hiking.png" />
     <link rel="stylesheet" href="styles/style.css" />
     <link rel="stylesheet" href="styles/fonts.css" />
@@ -18,20 +19,14 @@
     <div w3-include-html="templates/background.html"></div>
     <div id="adminLinks"></div>
     <button class="buttonLink right" onclick="logout()">Log Out</button>
-    <a class="buttonLink left" href="/touren.html">Aktuelle Tour</a>
+    <a class="buttonLink left" href="/homepage.html">Aktuelle Tour</a>
     <div class="mainContainer">
+        <h3>Mitglieder</h3>
       <div id="members"></div>
-      <div id="memberForm">
-        <h3>Neues Mitglied hinzufügen</h3>
-        <input type="text" id="memberName" placeholder="Name" required /><br />
-        <input
-          type="email"
-          id="memberEmail"
-          placeholder="Email"
-          required
-        /><br />
-        <button onclick="addMember()">Hinzufügen</button>
-        <p id="memberMsg"></p>
+      <div id="addMemberForm"></div>
+      <div id="pendingMembers"></div>
+      
+
       </div>
     </div>
     <div class="scrollToTopButton">

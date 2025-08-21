@@ -315,3 +315,34 @@ async function firstLogin() {
     }
   }
 }
+
+
+async function submitRegistration(email, pw1, name) {
+  const errorBox = document.getElementById("firstLoginError");
+  try {
+    const cred = await firebase
+      .auth()
+      .createUserWithEmailAndPassword(email, pw1);
+    const user = cred.user;
+
+    await user.updateProfile({ displayName: name });
+
+    await db.collection("users").doc(user.uid).set({
+      email: user.email,
+      isAdmin: false,
+      createdAt: new Date().toISOString(),
+      name: name,
+    });
+
+    alert("Registrierung erfolgreich! Eingeloggt als: " + name);
+    window.location.href = "touren.html";
+  } catch (err) {
+    if (err.code === "auth/email-already-in-use") {
+      errorBox.textContent =
+        "Diese Email ist bereits registriert. Bitte verwenden Sie den normalen Login oder 'Passwort vergessen'.";
+    } else {
+      console.error("Fehler bei der Registrierung:", err);
+      errorBox.textContent = "Fehler: " + err.message;
+    }
+  }
+}
