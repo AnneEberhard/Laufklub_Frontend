@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Laufklub Hameln</title>
+    <script
+      src="https://js-de.sentry-cdn.com/2c208e91dea39842d3ab33d785cffc71.min.js"
+      crossorigin="anonymous"
+    ></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -90,21 +94,23 @@
               Abbrechen
             </button>
           </div>
-           <a class="contactLink" href="/index.html">Kontakt</a>
+          <a class="contactLink" href="/index.html">Kontakt</a>
         </div>
       </div>
-        <div id="forgotModal" class="modal" style="display: none">
+      <div id="forgotModal" class="modal" style="display: none">
         <div class="modal-content">
           <h3>Passwort vergessen?</h3>
-          <p>Nicht schlimm! Email eingeben, abschicken, und es gibt einen Link zum Neusetzen des Passworts! <br> (E-mail ist auf Englisch)</p>
+          <p>
+            Nicht schlimm! Email eingeben, abschicken, und es gibt einen Link
+            zum Neusetzen des Passworts! <br />
+            (E-mail ist auf Englisch)
+          </p>
           <input id="forgotEmail" type="email" placeholder="E-Mail" />
-       
+
           <div id="forgotError" style="color: red"></div>
           <div class="buttonBox">
             <button onclick="resetPassword()">Abschicken</button>
-            <button class="red" onclick="closeForgotModal()">
-              Abbrechen
-            </button>
+            <button class="red" onclick="closeForgotModal()">Abbrechen</button>
           </div>
         </div>
       </div>

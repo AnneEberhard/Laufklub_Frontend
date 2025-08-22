@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Laufklub Hameln</title>
+    <script
+      src="https://js-de.sentry-cdn.com/2c208e91dea39842d3ab33d785cffc71.min.js"
+      crossorigin="anonymous"
+    ></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -34,25 +38,48 @@
 
     <div class="mainContainer" id="touren"></div>
     <div id="editRegistrationModal" class="modal dNone">
-  <div class="modal-content">
-    <form id="editRegistrationForm" onsubmit="handleEditRegistration(event)">
-      <h3>Anmeldung bearbeiten</h3>
-      <input type="hidden" id="editTourId">
-      <input type="hidden" id="editRegistrationId">
+      <div class="modal-content">
+        <form
+          id="editRegistrationForm"
+          onsubmit="handleEditRegistration(event)"
+        >
+          <h3>Anmeldung bearbeiten</h3>
+          <input type="hidden" id="editTourId" />
+          <input type="hidden" id="editRegistrationId" />
 
-      <input class="signUpForm" placeholder="Name" type="text" id="editName" required><br>
-      <label><input type="radio" name="editFahrt" value="big"> Große Fahrt</label>
-      <label><input type="radio" name="editFahrt" value="small"> Kleine Fahrt</label><br>
-      <textarea class="signUpComment" placeholder="Kommentar" id="editComment"></textarea>
+          <input
+            class="signUpForm"
+            placeholder="Name"
+            type="text"
+            id="editName"
+            required
+          /><br />
+          <label
+            ><input type="radio" name="editFahrt" value="big" /> Große
+            Fahrt</label
+          >
+          <label
+            ><input type="radio" name="editFahrt" value="small" /> Kleine
+            Fahrt</label
+          ><br />
+          <textarea
+            class="signUpComment"
+            placeholder="Kommentar"
+            id="editComment"
+          ></textarea>
 
-      <div class="editRegistrationModalButtons">
-        <button type="submit">Speichern</button>
-        <button type="button" class="blue" onclick="closeEditModal()">Abbrechen</button>
-        <button type="button" class="red" onclick="deleteRegistration()">Abmelden</button>
+          <div class="editRegistrationModalButtons">
+            <button type="submit">Speichern</button>
+            <button type="button" class="blue" onclick="closeEditModal()">
+              Abbrechen
+            </button>
+            <button type="button" class="red" onclick="deleteRegistration()">
+              Abmelden
+            </button>
+          </div>
+        </form>
       </div>
-    </form>
-  </div>
-</div>
+    </div>
 
     <div class="scrollToTopButton">
       <svg
