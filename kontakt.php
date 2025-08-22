@@ -20,7 +20,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Mail verschicken
     if (mail($to, $subject, $body, $headers)) {
-        echo "Vielen Dank, $name! Die Nachricht wurde gesendet.";
+        //echo "Vielen Dank, $name! Die Nachricht wurde gesendet.";
+        header("Location: danke.html");
+        exit;
     } else {
         echo "Leider ist ein Fehler aufgetreten. Bitte versuchen Sie später erneut.";
     }

@@ -9,8 +9,8 @@ async function init() {
 }
 
 /**
- * 
- * 
+ *
+ *
  */
 async function checkUserAdminStatus() {
   return new Promise((resolve, reject) => {
@@ -51,12 +51,12 @@ function renderAdminLinks(isAdmin) {
       : ""
   }
 `;
-    containerMobile.innerHTML = `
+  containerMobile.innerHTML = `
     ${
       isAdmin
-      ? `<button id='editTourButton' onclick="openAdminLinks()">Admin</button>`
+        ? `<button id='editTourButton' onclick="openAdminLinks()">Admin</button>`
         : ""
-    }`
+    }`;
 }
 
 function openAdminLinks() {
@@ -92,7 +92,6 @@ async function loadLatestTour() {
     console.error("Fehler beim Laden der Tour:", error);
   }
 }
-
 
 function renderTour() {
   const tour = currentTour;
@@ -158,7 +157,9 @@ async function loadRegistrations() {
             <div class="registrationItemTop">
               <div><strong>- ${data.name}</strong> – ${typ}</div>
               <div>
-                <button onclick="openEditRegistrationModal('${tour.id}', '${doc.id}')">
+                <button onclick="openEditRegistrationModal('${tour.id}', '${
+          doc.id
+        }')">
                   Bearbeiten
                 </button>
               </div>
@@ -178,7 +179,6 @@ async function loadRegistrations() {
       list.innerHTML = "<li>Fehler beim Laden</li>";
     });
 }
-
 
 function handleTourRegistration(e) {
   e.preventDefault();
@@ -208,7 +208,9 @@ function openEditRegistrationModal(tourId, registrationId) {
       document.getElementById("editRegistrationId").value = registrationId;
 
       document.getElementById("editName").value = data.name || "";
-      document.querySelector(`input[name="editFahrt"][value="${data.big ? "big" : "small"}"]`).checked = true;
+      document.querySelector(
+        `input[name="editFahrt"][value="${data.big ? "big" : "small"}"]`
+      ).checked = true;
       document.getElementById("editComment").value = data.comment || "";
 
       modal.classList.remove("dNone");
@@ -218,7 +220,6 @@ function openEditRegistrationModal(tourId, registrationId) {
 function closeEditModal() {
   document.getElementById("editRegistrationModal").classList.add("dNone");
 }
-
 
 function handleEditRegistration(event) {
   event.preventDefault();
@@ -272,8 +273,6 @@ function deleteRegistration() {
     });
 }
 
-
-
 // Anmelden für Tour
 async function registerForTour(tourId, name, selected, comment) {
   const ref = db.collection("tours").doc(tourId).collection("registrations");
@@ -315,8 +314,6 @@ function unregisterForTour(tourId, registrationId) {
       alert("Abmeldung fehlgeschlagen.");
     });
 }
-
-
 
 //Archiv
 async function archive() {
@@ -402,7 +399,9 @@ function login() {
       console.log("Eingeloggt als: " + userCredential.user.email);
     })
     .catch((error) => {
-      alert("Fehler beim Einloggen: " + error.message);
+      console.log(error.message);
+      document.getElementById("loginError").innerHTML =
+        "Ein Fehler ist aufgetreten! Passwort vergessen? Oder ist dies die erste Anmeldung? <br> Dann bitte die Buttons unten benutzen.";
     });
 }
 
@@ -431,8 +430,7 @@ async function firstLogin() {
   if (!pending) {
     errorBox.innerHTML = `
     Sie sind nicht für die Registrierung berechtigt. Bitte kontaktieren Sie uns. <br> 
-    Oder sind Sie schon registriert? Dann bitte den normalen Login nutzen.`
-      ;
+    Oder sind Sie schon registriert? Dann bitte den normalen Login nutzen.`;
     return;
   }
 
@@ -484,7 +482,9 @@ async function submitRegistration(email, pw1, name) {
   const errorBox = document.getElementById("firstLoginError");
   try {
     // 1. Firebase-User anlegen
-    const cred = await firebase.auth().createUserWithEmailAndPassword(email, pw1);
+    const cred = await firebase
+      .auth()
+      .createUserWithEmailAndPassword(email, pw1);
     const user = cred.user;
 
     await user.updateProfile({ displayName: name });
@@ -498,7 +498,8 @@ async function submitRegistration(email, pw1, name) {
     });
 
     // 3. pendingUser löschen
-    const pendingQuery = await db.collection("pendingUsers")
+    const pendingQuery = await db
+      .collection("pendingUsers")
       .where("email", "==", email)
       .get();
 
@@ -510,7 +511,6 @@ async function submitRegistration(email, pw1, name) {
 
     alert("Registrierung erfolgreich! Eingeloggt als: " + name);
     window.location.href = "homepage.html";
-
   } catch (err) {
     if (err.code === "auth/email-already-in-use") {
       errorBox.textContent =
@@ -559,7 +559,6 @@ function logout() {
       alert("Fehler beim Logout");
     });
 }
-
 
 /**
  * includes the HTML templates
