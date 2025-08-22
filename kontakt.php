@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Mail vorbereiten
-    $to      = "anne.eberhard@gmx.net";
+    $to      = "wkillmann@t-online.de";
     $subject = "Neue Kontaktanfrage von $name";
     $body    = "Name: $name\nE-Mail: $email\n\nNachricht:\n$message";
     $headers = "From: $email\r\nReply-To: $email\r\n";
