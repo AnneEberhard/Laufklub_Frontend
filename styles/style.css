@@ -312,15 +312,26 @@ ul {
 
 .editRegistrationModalButtons {
   width: 100%;
-    display: flex;
-    gap: 12px;
-    justify-content: space-between;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
 }
 
 .buttonBelow {
   display: flex;
   justify-content: space-around;
   flex-direction: column;
+}
+
+#firstLoginError {
+  display: flex;
+  justify-content: center;
+  color: rgb(172,17,37);
+}
+
+.contactLink {
+  display: flex;
+  justify-content: center;
 }
 
 /*header*/
@@ -490,12 +501,11 @@ footer {
     flex-direction: column;
     align-items: stretch;
     gap: 32px;
-    
   }
 
   .exit {
     border-radius: 100px;
-    background-color: rgb(0,123,109);
+    background-color: rgb(0, 123, 109);
     padding: 8px;
     color: white;
     font-weight: 900;
@@ -503,16 +513,15 @@ footer {
   }
 
   .loginBox {
-    margin:8px;
+    margin: 8px;
   }
 
-.buttonBelow {
-  flex-direction: column;
-  gap:8px;
-}
+  .buttonBelow {
+    flex-direction: column;
+    gap: 8px;
+  }
 
-.editRegistrationModalButtons {
-  flex-direction: column;
-}
-
+  .editRegistrationModalButtons {
+    flex-direction: column;
+  }
 }
