@@ -78,3 +78,23 @@ exports.createUserByAdmin = functions.https.onCall(async (data, context) => {
     throw new functions.https.HttpsError("internal", error.message);
   }
 });
+
+/*        <button id="editTourButton" onclick="renderEditForm2()">Fahrt bearbeiten</button>*/
+ 
+function renderEditForm2() {
+  const container = document.getElementById("touren");
+  const tour = currentTour;
+  const dateObj = tour.date.toDate ? tour.date.toDate() : new Date(tour.date);
+  const isoDate = dateObj.toISOString().slice(0, 16);
+
+  container.innerHTML = `
+    <h2>Tour bearbeiten</h2>
+    <form id="editTourForm" onsubmit="handleSaveTour(event)">
+      <input type="text" id="editName" value="${tour.name}" required />
+      <input type="datetime-local" id="editDate" value="${isoDate}" required />
+      <textarea id="editDescription">${tour.description || ""}</textarea>
+      <button type="submit">Speichern</button>
+      <button type="button" onclick="handleCancelEdit()">Abbrechen</button>
+    </form>
+  `;
+}

@@ -17,12 +17,13 @@
     <link rel="stylesheet" href="styles/style.css" />
     <link rel="stylesheet" href="styles/fonts.css" />
   </head>
-  <body onload="includeHTML(), checkUserAdminStatus()">
+  <body onload="editPage()">
     <div w3-include-html="templates/header.html"></div>
     <div w3-include-html="templates/background.html"></div>
     <a class="buttonLink left" href="/homepage.html">Home</a>
     <button class="buttonLink right" onclick="logout()">Log Out</button>
     <div class="mainContainer">
+      <div class="dNone" id="editTourBox"></div>
       <form id="createTourForm" onsubmit="handleCreateTour(event)">
         <h2>Neue Tour anlegen</h2>
         <input id="tourName" type="text" placeholder="Name" required />
@@ -33,6 +34,7 @@
           <button type="submit">Speichern</button>
         </div>
       </form>
+      <div id="archive"></div>
     </div>
     <div class="scrollToTopButton">
       <svg

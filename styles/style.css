@@ -1,3 +1,5 @@
+/* general */
+
 body {
   margin: 0;
   display: flex;
@@ -121,6 +123,18 @@ textarea {
   width: 80%;
 }
 
+.buttonBox {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+}
+
+.width90 {
+  width: 90%;
+}
+
+/* login */
+
 .passwordWrapper {
   display: flex;
   align-items: center;
@@ -140,11 +154,6 @@ textarea {
   border-radius: 0 10px 10px 0;
 }
 
-.buttonBox {
-  width: 100%;
-  display: flex;
-  justify-content: space-around;
-}
 
 .loginBox {
   display: flex;
@@ -156,6 +165,8 @@ textarea {
   margin: 60px;
   gap: 8px;
 }
+
+/*Touren*/
 
 .tour {
   padding: 1em;
@@ -228,6 +239,14 @@ ul {
   margin-top: 14px;
 }
 
+/*edit Tour*/
+
+#editTourForm {
+  width: 90%;
+}
+
+/*registration*/
+
 .registrationItem {
   max-width: 90vw;
   gap: 8px;
@@ -245,6 +264,8 @@ ul {
 .registrationComment {
   overflow: auto;
 }
+
+/* Admin*/
 
 #adminLinks {
   position: absolute;
@@ -326,7 +347,7 @@ ul {
 #firstLoginError {
   display: flex;
   justify-content: center;
-  color: rgb(172,17,37);
+  color: rgb(172, 17, 37);
 }
 
 .contactLink {

@@ -1,24 +1,61 @@
 // Edit page
+// Tour ID ist hier noch neu; es müssen alle Touren irgendwie geladen werden und es braucht eine load Individual Tour
 
-function renderEditForm() {
-  const container = document.getElementById("touren");
-  const tour = currentTour;
+async function editPage() {
+  await includeHTML();
+  const { user, isAdmin } = await checkUserAdminStatus();
+  loadAllTours(isAdmin);
+}
+
+
+async function editTour(tourId) {
+  const tour = await loadTourById(tourId);
+  renderEditForm(tour);
+}
+
+
+async function loadTourById(tourId) {
+  try {
+    const docRef = db.collection("tours").doc(tourId);
+    const doc = await docRef.get();
+
+    if (!doc.exists) {
+      console.warn("Keine Tour mit dieser ID gefunden:", tourId);
+      return;
+    }
+
+    const tour = { id: doc.id, ...doc.data() };
+    return tour;
+  } catch (error) {
+    console.error("Fehler beim Laden der Tour:", error);
+    return null;
+  }
+}
+
+function renderEditForm(tour) {
+  const popup = document.getElementById("editTourBox");
+  popup.classList.remove("dNone");
+  popup.classList.add("popup-overlay");
+  
   const dateObj = tour.date.toDate ? tour.date.toDate() : new Date(tour.date);
   const isoDate = dateObj.toISOString().slice(0, 16);
 
-  container.innerHTML = `
-    <h2>Tour bearbeiten</h2>
-    <form id="editTourForm" onsubmit="handleSaveTour(event)">
-      <input type="text" id="editName" value="${tour.name}" required />
+  popup.innerHTML = `
+    <form id="editTourForm" onsubmit="handleSaveTour(event, '${tour.id}')">
+      <h2>Tour bearbeiten</h2>
+      <input type="text" class="width90" id="editName" value="${tour.name}" required />
       <input type="datetime-local" id="editDate" value="${isoDate}" required />
-      <textarea id="editDescription">${tour.description || ""}</textarea>
-      <button type="submit">Speichern</button>
-      <button type="button" onclick="handleCancelEdit()">Abbrechen</button>
+      <textarea class="width90" id="editDescription">${tour.description || ""}</textarea>
+      <div class="buttonBox">
+        <button class="red" type="button" onclick="closeEdit()">Abbrechen</button>
+        <button type="submit">Speichern</button>
+      </div>
     </form>
   `;
 }
 
-function handleSaveTour(e) {
+
+function handleSaveTour(e, tourId) {
   e.preventDefault();
 
   const updatedTour = {
@@ -28,11 +65,13 @@ function handleSaveTour(e) {
   };
 
   db.collection("tours")
-    .doc(currentTour.id)
+    .doc(tourId)
     .update(updatedTour)
     .then(() => {
       alert("Tour aktualisiert!");
-      loadLatestTour();
+      closeEdit();
+      document.getElementById("archive").innerHTML = '';
+      loadAllTours(true)
     })
     .catch((err) => {
       console.error("Fehler beim Aktualisieren:", err);
@@ -40,8 +79,10 @@ function handleSaveTour(e) {
     });
 }
 
-function handleCancelEdit() {
-  renderTour(currentTour);
+function closeEdit() {
+  const popup = document.getElementById("editTourBox");
+  popup.classList.add("dNone");
+  popup.classList.remove("popup-overlay");
 }
 
 //Neue Tour

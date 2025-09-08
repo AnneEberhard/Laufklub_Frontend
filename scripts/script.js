@@ -4,7 +4,7 @@ let isAdmin = false;
 async function init() {
   await includeHTML();
   const { user, isAdmin } = await checkUserAdminStatus();
-  loadLatestTour();
+  loadNextTour();
   renderAdminLinks(isAdmin);
 }
 
@@ -44,8 +44,7 @@ function renderAdminLinks(isAdmin) {
   ${
     isAdmin
       ? `
-        <a class="buttonLink" href="/neu.html">Neue Fahrt anlegen</a>
-        <button id="editTourButton" onclick="renderEditForm()">Fahrt bearbeiten</button>
+        <a class="buttonLink" href="/tours.html">Fahrten bearbeiten</a>
         <a class="buttonLink" href="/members.html">Mitglieder</a>
       `
       : ""
@@ -73,6 +72,33 @@ function mobileRenderEditForm() {
 }
 
 // Tour page
+
+async function loadNextTour() {
+  try {
+    const today = new Date();
+
+    const querySnapshot = await db
+      .collection("tours")
+      .where("date", ">=", today)
+      .orderBy("date", "asc")
+      .limit(1)
+      .get();
+
+    if (querySnapshot.empty) {
+      console.warn("Keine kommenden Touren gefunden.");
+      renderNoUpcomingTours();
+      return;
+    }
+
+    const doc = querySnapshot.docs[0];
+    const tour = { id: doc.id, ...doc.data() };
+    currentTour = tour;
+    renderTour();
+  } catch (error) {
+    console.error("Fehler beim Laden der nächsten Tour:", error);
+  }
+}
+
 
 async function loadLatestTour() {
   try {
@@ -130,6 +156,12 @@ function renderTour() {
   `;
 
   loadRegistrations();
+}
+
+function renderNoUpcomingTours() {
+  document.getElementById("touren").innerHTML = `
+    <h2 class="tourHeader"> Keine kommenden Touren gefunden </h2>`
+  
 }
 
 async function loadRegistrations() {
@@ -319,7 +351,7 @@ function unregisterForTour(tourId, registrationId) {
 async function archive() {
   await includeHTML();
   const { user, isAdmin } = await checkUserAdminStatus();
-  loadAllTours(isAdmin);
+  loadAllTours(false);
 }
 
 function loadAllTours(isAdmin) {
@@ -349,7 +381,11 @@ function renderArchiveTour(tour, isAdmin) {
       <p>${tour.description}</p>
       ${
         isAdmin
-          ? `<button onclick="deleteTour('${tour.id}')">Löschen</button>`
+          ? `
+          <div class="buttonBox">
+            <button class="red" onclick="deleteTour('${tour.id}')">Löschen</button>
+            <button onclick="editTour('${tour.id}')">Bearbeiten</button>
+          </div>`
           : ""
       }
       <div class="divider marginTop"></div>
