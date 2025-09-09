@@ -26,10 +26,7 @@
     <div id="adminLinksMobile" class="left"></div>
     <div id="adminLinksMobileMenu" class="dNone">
       <div class="mobileLinks">
-        <a class="buttonLink" href="/neu.html">Fahrten</a>
-        <button id="editTourButton" onclick="mobileRenderEditForm()">
-          Aktuelle Fahrt bearbeiten
-        </button>
+        <a class="buttonLink" href="/tours.html">Fahrten</a>
         <a class="buttonLink" href="/members.html">Mitglieder</a>
       </div>
       <div onclick="closeMobileAdminLinks()" class="exit">X</div>
@@ -69,13 +66,13 @@
           ></textarea>
 
           <div class="editRegistrationModalButtons">
-            <button type="submit">Speichern</button>
-            <button type="button" class="blue" onclick="closeEditModal()">
-              Abbrechen
-            </button>
             <button type="button" class="red" onclick="deleteRegistration()">
               Abmelden
             </button>
+            <button type="button" class="blue" onclick="closeEditModal()">
+              Abbrechen
+            </button>
+            <button type="submit">Speichern</button>
           </div>
         </form>
       </div>

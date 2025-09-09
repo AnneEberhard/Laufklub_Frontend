@@ -20,7 +20,21 @@
   <body onload="editPage()">
     <div w3-include-html="templates/header.html"></div>
     <div w3-include-html="templates/background.html"></div>
-    <a class="buttonLink left" href="/homepage.html">Home</a>
+    <div id="adminLinks">
+      <a class="buttonLink" href="/homepage.html">Startseite</a>
+      <a class="buttonLink" href="/members.html">Mitglieder</a>
+    </div>
+    <div id="adminLinksMobile" class="left">
+      <button id='editTourButton' onclick="openAdminLinks()">Admin</button>
+    </div>
+    <div id="adminLinksMobileMenu" class="dNone">
+      <div class="mobileLinks">
+        <a class="buttonLink" href="/homepage.html">Startseite</a>
+        <a class="buttonLink" href="/members.html">Mitglieder</a>
+      </div>
+      <div onclick="closeMobileAdminLinks()" class="exit">X</div>
+    </div>
+
     <button class="buttonLink right" onclick="logout()">Log Out</button>
     <div class="mainContainer">
       <div class="dNone" id="editTourBox"></div>

@@ -21,9 +21,21 @@
   <body onload="members()">
     <div w3-include-html="templates/header.html"></div>
     <div w3-include-html="templates/background.html"></div>
-    <div id="adminLinks"></div>
+        <div id="adminLinks">
+      <a class="buttonLink" href="/homepage.html">Startseite</a>
+      <a class="buttonLink" href="/tours.html">Fahrten bearbeiten</a>
+    </div>
+    <div id="adminLinksMobile" class="left">
+      <button id='editTourButton' onclick="openAdminLinks()">Admin</button>
+    </div>
+    <div id="adminLinksMobileMenu" class="dNone">
+      <div class="mobileLinks">
+        <a class="buttonLink" href="/homepage.html">Startseite</a>
+        <a class="buttonLink" href="/tours.html">Fahrten bearbeiten</a>
+      </div>
+      <div onclick="closeMobileAdminLinks()" class="exit">X</div>
+    </div>
     <button class="buttonLink right" onclick="logout()">Log Out</button>
-    <a class="buttonLink left" href="/homepage.html">Aktuelle Tour</a>
     <div class="mainContainer">
       <h3>Mitglieder</h3>
       <div id="members"></div>

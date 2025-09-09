@@ -154,7 +154,6 @@ textarea {
   border-radius: 0 10px 10px 0;
 }
 
-
 .loginBox {
   display: flex;
   flex-direction: column;
@@ -531,6 +530,11 @@ footer {
     color: white;
     font-weight: 900;
     max-height: fit-content;
+    cursor: pointer;
+  }
+
+  .exit:hover {
+    box-shadow: 0px 0px 36px rgba(0, 123, 109, 1);
   }
 
   .loginBox {
