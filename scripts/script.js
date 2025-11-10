@@ -99,7 +99,6 @@ async function loadNextTour() {
   }
 }
 
-
 async function loadLatestTour() {
   try {
     const querySnapshot = await db
@@ -151,7 +150,17 @@ function renderTour() {
       </form>
 
       <h3>Bereits angemeldet:</h3>
-      <ul id="anmeldeliste"></ul>
+      <div id="registrationContainer">
+        <div class="registrationColumn">
+          <h3>Große Fahrt</h3>
+          <ul id="anmeldeliste-gross"></ul>
+        </div>
+        <div class="registrationColumn">
+          <h3>Kleine Fahrt</h3>
+          <ul id="anmeldeliste-klein"></ul>
+        </div>
+      </div>
+
     </div>
   `;
 
@@ -160,11 +169,84 @@ function renderTour() {
 
 function renderNoUpcomingTours() {
   document.getElementById("touren").innerHTML = `
-    <h2 class="tourHeader"> Keine kommenden Touren gefunden </h2>`
-  
+    <h2 class="tourHeader"> Keine kommenden Touren gefunden </h2>`;
 }
 
 async function loadRegistrations() {
+  const listGross = document.getElementById("anmeldeliste-gross");
+  const listKlein = document.getElementById("anmeldeliste-klein");
+  let tour = currentTour;
+
+  listGross.innerHTML = "<li>Wird geladen...</li>";
+  listKlein.innerHTML = "<li>Wird geladen...</li>";
+
+  db.collection("tours")
+    .doc(tour.id)
+    .collection("registrations")
+    .get()
+    .then((querySnapshot) => {
+      console.log("Docs gefunden:", querySnapshot.size);
+
+      // Wenn gar keine Anmeldungen existieren:
+      if (querySnapshot.empty) {
+        listGross.innerHTML = "<li>Noch niemand angemeldet</li>";
+        listKlein.innerHTML = "<li>Noch niemand angemeldet</li>";
+        return;
+      }
+
+      // Inhalte zurücksetzen
+      listGross.innerHTML = "";
+      listKlein.innerHTML = "";
+
+      let hasGross = false;
+      let hasKlein = false;
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const typ = data.big ? "Große Fahrt" : "Kleine Fahrt";
+
+        const entry = `
+          <li class="registrationItem">
+            <div class="registrationItemTop">
+              <div><strong>- ${data.name}</strong></div>
+              <div>
+                <button onclick="openEditRegistrationModal('${tour.id}', '${doc.id}')">
+                  Bearbeiten
+                </button>
+              </div>
+            </div>
+            ${
+              data.comment
+                ? `<div class="registrationComment"><em>${data.comment}</em></div>`
+                : ""
+            }
+          </li>
+          <div class="divider"></div>
+        `;
+
+        if (data.big) {
+          listGross.innerHTML += entry;
+          hasGross = true;
+        } else {
+          listKlein.innerHTML += entry;
+          hasKlein = true;
+        }
+      });
+
+      // Falls in einer Kategorie keine Einträge vorhanden sind
+      if (!hasGross) listGross.innerHTML = "<li>Noch niemand angemeldet</li>";
+      if (!hasKlein) listKlein.innerHTML = "<li>Noch niemand angemeldet</li>";
+    })
+    .catch((error) => {
+      console.error("Fehler beim Laden der Anmeldungen:", error);
+      listGross.innerHTML = "<li>Fehler beim Laden</li>";
+      listKlein.innerHTML = "<li>Fehler beim Laden</li>";
+    });
+}
+
+
+
+async function loadRegistrations2() {
   const list = document.getElementById(`anmeldeliste`);
   let tour = currentTour;
   list.innerHTML = "<li>Wird geladen...</li>";
