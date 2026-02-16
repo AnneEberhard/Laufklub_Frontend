@@ -118,7 +118,7 @@ function renderTour() {
   const registrationClosed = now > deadline;
 
   container.innerHTML = `
-    <p class="centerText redText">Hinweis: Anmeldenschluss ist immer am Mittwoch davor um 9 Uhr.</p>
+    <p class="centerText redText">Hinweis: Anmeldeschluss ist immer am Dienstag davor um 24 Uhr.</p>
     <h2 class="tourHeader"> Unsere nächste Fahrt: </h2>
     <div class='tour'>
       <h2>${tour.name}</h2>
@@ -176,7 +176,7 @@ function getRegistrationDeadline(tourDate) {
   const deadline = new Date(tourDate);
   deadline.setDate(deadline.getDate() - 3); // Mittwoch
 
-  deadline.setHours(9, 0, 0, 0);
+  deadline.setHours(0, 0, 0, 0);
 
   return deadline;
 }
