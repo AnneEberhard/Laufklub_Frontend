@@ -419,11 +419,18 @@ function renderArchiveTour(tour, isAdmin) {
   const container = document.getElementById("archive");
   const dateObj = tour.date.toDate ? tour.date.toDate() : new Date(tour.date);
   const formattedDate = dateObj.toLocaleDateString("de-DE");
+  const formattedTime = dateObj.toLocaleTimeString("de-DE", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   container.innerHTML += `
     <div class='tour' id="tour-${tour.id}">
       <h2>${tour.name}</h2>
+      <div class="centerText">
       <h3>${formattedDate}</h3>
+      <h4 class="tour-time">${formattedTime} Uhr</h4>
+      </div>
       <p>${tour.description}</p>
       ${
         isAdmin
