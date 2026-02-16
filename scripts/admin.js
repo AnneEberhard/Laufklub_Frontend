@@ -1,17 +1,41 @@
 // Edit page
-// Tour ID ist hier noch neu; es müssen alle Touren irgendwie geladen werden und es braucht eine load Individual Tour
 
+/**
+ * Initializes the tour editing page:
+ * - Loads shared HTML
+ * - Checks authentication and admin status
+ * - Loads all tours for editing
+ *
+ * @async
+ * @returns {Promise<void>}
+ */
 async function editPage() {
   await includeHTML();
   const { user, isAdmin } = await checkUserAdminStatus();
   loadAllTours(isAdmin);
 }
 
+
+/**
+ * Loads a specific tour by ID and renders the edit form.
+ *
+ * @async
+ * @param {string} tourId - The ID of the tour to edit.
+ * @returns {Promise<void>}
+ */
 async function editTour(tourId) {
   const tour = await loadTourById(tourId);
   renderEditForm(tour);
 }
 
+
+/**
+ * Loads a tour from Firestore by its ID.
+ *
+ * @async
+ * @param {string} tourId - The ID of the tour.
+ * @returns {Promise<Object|null>} The tour object if found, otherwise null.
+ */
 async function loadTourById(tourId) {
   try {
     const docRef = db.collection("tours").doc(tourId);
@@ -30,6 +54,17 @@ async function loadTourById(tourId) {
   }
 }
 
+
+/**
+ * Renders the edit form for a given tour in a popup overlay.
+ *
+ * @param {Object} tour - The tour object.
+ * @param {string} tour.id - Firestore document ID.
+ * @param {string} tour.name - Tour name.
+ * @param {Date|firebase.firestore.Timestamp|string} tour.date - Tour date.
+ * @param {string} [tour.description] - Tour description.
+ * @returns {void}
+ */
 function renderEditForm(tour) {
   const popup = document.getElementById("editTourBox");
   popup.classList.remove("dNone");
@@ -52,12 +87,28 @@ function renderEditForm(tour) {
   `;
 }
 
+
+/**
+ * Formats a Date object to a string compatible with <input type="datetime-local">.
+ *
+ * @param {Date} date - The date to format.
+ * @returns {string} Formatted date string in "YYYY-MM-DDTHH:MM" format.
+ */
 function formatForDateTimeLocal(date) {
   const pad = (n) => n.toString().padStart(2, "0");
 
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
+
+/**
+ * Handles the submission of the tour edit form.
+ * Updates the tour in Firestore and reloads the tour list.
+ *
+ * @param {Event} e - The form submit event.
+ * @param {string} tourId - The ID of the tour to update.
+ * @returns {void}
+ */
 function handleSaveTour(e, tourId) {
   e.preventDefault();
 
@@ -85,14 +136,27 @@ function handleSaveTour(e, tourId) {
     });
 }
 
+
+/**
+ * Closes the tour edit popup.
+ *
+ * @returns {void}
+ */
 function closeEdit() {
   const popup = document.getElementById("editTourBox");
   popup.classList.add("dNone");
   popup.classList.remove("popup-overlay");
 }
 
-//Neue Tour
+//New Tour
 
+/**
+ * Handles the creation of a new tour from the form input.
+ * Validates required fields, adds the tour to Firestore, and redirects on success.
+ *
+ * @param {Event} e - The form submit event.
+ * @returns {void}
+ */
 function handleCreateTour(e) {
   e.preventDefault();
 
@@ -124,6 +188,17 @@ function handleCreateTour(e) {
 }
 
 // Members
+
+/**
+ * Initializes the members page:
+ * - Loads shared HTML
+ * - Checks authentication and admin status
+ * - Loads all members
+ * - Renders "Add Member" button if admin
+ *
+ * @async
+ * @returns {Promise<void>}
+ */
 async function members() {
   await includeHTML();
   const { user, isAdmin } = await checkUserAdminStatus();
@@ -133,6 +208,13 @@ async function members() {
   }
 }
 
+
+/**
+ * Loads all users from Firestore and renders each member.
+ *
+ * @param {boolean} isAdmin - Whether the current user has admin rights.
+ * @returns {void}
+ */
 function loadMembers(isAdmin) {
   db.collection("users")
     .orderBy("email")
@@ -148,6 +230,19 @@ function loadMembers(isAdmin) {
     });
 }
 
+
+/**
+ * Renders a single member in the members list.
+ * Includes edit and delete buttons if the current user is admin.
+ *
+ * @param {Object} user - The user object.
+ * @param {string} user.id - Firestore document ID.
+ * @param {string} user.name - User's display name.
+ * @param {string} user.email - User's email.
+ * @param {boolean} user.isAdmin - Whether the user is an admin.
+ * @param {boolean} isAdmin - Whether the current user has admin rights.
+ * @returns {void}
+ */
 function renderMember(user, isAdmin) {
   const container = document.getElementById("members");
   container.innerHTML += `
@@ -171,6 +266,16 @@ function renderMember(user, isAdmin) {
   `;
 }
 
+
+/**
+ * Opens a popup to edit a member's details.
+ *
+ * @param {string} userId - The ID of the member.
+ * @param {string} currentName - Current name of the member.
+ * @param {string} currentEmail - Current email of the member.
+ * @param {boolean} isAdmin - Whether the member is an admin.
+ * @returns {void}
+ */
 function editMember(userId, currentName, currentEmail, isAdmin) {
   const popup = document.createElement("div");
   popup.classList.add("popup-overlay");
@@ -199,6 +304,13 @@ function editMember(userId, currentName, currentEmail, isAdmin) {
   document.body.appendChild(popup);
 }
 
+
+/**
+ * Saves the edited member details to Firestore.
+ *
+ * @param {string} userId - The ID of the member to update.
+ * @returns {void}
+ */
 function saveMember(userId) {
   const newName = document.getElementById("editName").value.trim();
   const newEmail = document.getElementById("editEmail").value.trim();
@@ -222,11 +334,25 @@ function saveMember(userId) {
     });
 }
 
+
+/**
+ * Closes the currently open popup (used for editing members or tours).
+ *
+ * @returns {void}
+ */
 function closePopup() {
   const popup = document.querySelector(".popup-overlay");
   if (popup) popup.remove();
 }
 
+
+/**
+ * Deletes a member from Firestore after user confirmation and removes them from the DOM.
+ *
+ * @async
+ * @param {string} userId - The ID of the member to delete.
+ * @returns {Promise<void>}
+ */
 async function deleteMember(userId) {
   if (!confirm("Soll dieses Mitglied wirklich gelöscht werden?")) return;
   try {
@@ -239,11 +365,24 @@ async function deleteMember(userId) {
   }
 }
 
+
+/**
+ * Renders the "Add Member" form and loads the list of pending members.
+ *
+ * @param {boolean} isAdmin - Whether the current user has admin rights.
+ * @returns {void}
+ */
 function renderAddMember(isAdmin) {
   renderAddMemberForm();
   loadPendingMembers(isAdmin);
 }
 
+
+/**
+ * Renders the HTML form for adding a new pending member.
+ *
+ * @returns {void}
+ */
 function renderAddMemberForm() {
   document.getElementById("addMemberForm").innerHTML = `        
         <br>
@@ -261,6 +400,13 @@ function renderAddMemberForm() {
         <p id="memberMsg"></p>`;
 }
 
+
+/**
+ * Adds a new pending member to Firestore after validation.
+ * Checks if the email is already pending and shows messages accordingly.
+ *
+ * @returns {void}
+ */
 function addMember() {
   const name = document.getElementById("memberName").value.trim();
   const email = document.getElementById("memberEmail").value.trim();
@@ -304,6 +450,14 @@ function addMember() {
     });
 }
 
+
+/**
+ * Loads all pending members from Firestore and renders them.
+ *
+ * @param {boolean} isAdmin - Whether the current user has admin rights.
+ * @async
+ * @returns {Promise<void>}
+ */
 async function loadPendingMembers(isAdmin) {
   const container = document.getElementById("pendingMembers");
   container.innerHTML = "<h3>Vorgemerkte Mitglieder</h3>";
@@ -319,6 +473,18 @@ async function loadPendingMembers(isAdmin) {
   }
 }
 
+
+/**
+ * Renders a single pending member in the pending members list.
+ * Shows edit and delete buttons if the current user is admin.
+ *
+ * @param {Object} user - The pending user object.
+ * @param {string} user.id - Firestore document ID.
+ * @param {string} user.name - Name of the pending user.
+ * @param {string} user.email - Email of the pending user.
+ * @param {boolean} isAdmin - Whether the current user has admin rights.
+ * @returns {void}
+ */
 function renderPendingMember(user, isAdmin) {
   const container = document.getElementById("pendingMembers");
   container.innerHTML += `
@@ -340,6 +506,15 @@ function renderPendingMember(user, isAdmin) {
   `;
 }
 
+
+/**
+ * Opens a popup to edit a pending member's details.
+ *
+ * @param {string} userId - The ID of the pending user.
+ * @param {string} currentName - Current name of the pending user.
+ * @param {string} currentEmail - Current email of the pending user.
+ * @returns {void}
+ */
 function editPendingUser(userId, currentName, currentEmail) {
   const popup = document.createElement("div");
   popup.classList.add("popup-overlay");
@@ -363,6 +538,13 @@ function editPendingUser(userId, currentName, currentEmail) {
   document.body.appendChild(popup);
 }
 
+
+/**
+ * Saves changes to a pending user in Firestore and reloads the page.
+ *
+ * @param {string} userId - The ID of the pending user to update.
+ * @returns {void}
+ */
 function savePendingUser(userId) {
   const newName = document.getElementById("editPendingName").value.trim();
   const newEmail = document.getElementById("editPendingEmail").value.trim();
@@ -384,6 +566,15 @@ function savePendingUser(userId) {
     });
 }
 
+
+/**
+ * Deletes a pending user from Firestore after user confirmation
+ * and removes them from the DOM.
+ *
+ * @async
+ * @param {string} userId - The ID of the pending user to delete.
+ * @returns {Promise<void>}
+ */
 async function deletePendingUser(userId) {
   if (!confirm("Soll dieser vorgemerkte Nutzer wirklich gelöscht werden?"))
     return;

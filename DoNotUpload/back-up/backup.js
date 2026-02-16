@@ -484,3 +484,172 @@ async function loadLatestTour() {
     console.error("Fehler beim Laden der Tour:", error);
   }
 }
+
+/**
+ * Renders the `currentTour` in the DOM, including:
+ * - Tour name, date, time, description, and map link
+ * - Registration form (disabled if registration closed)
+ * - Lists of registered participants
+ *
+ * @function renderTour
+ * @returns {void}
+ */
+function renderTour() {
+  const tour = currentTour;
+  const container = document.getElementById("touren");
+  const dateObj = tour.date.toDate ? tour.date.toDate() : new Date(tour.date);
+  const formattedDate = dateObj.toLocaleString("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+  const formattedTime = dateObj.toLocaleTimeString("de-DE", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  const now = new Date();
+  const deadline = getRegistrationDeadline(dateObj);
+  const registrationClosed = now > deadline;
+
+  container.innerHTML = `
+    <p class="centerText redText">Hinweis: Anmeldeschluss ist immer am Dienstag davor um 24 Uhr.</p>
+    <h2 class="tourHeader"> Unsere nächste Fahrt: </h2>
+    <div class='tour'>
+      <h2>${tour.name}</h2>
+      <div class="centerText">
+      <h3>${formattedDate}</h3>
+      <h4 class="tour-time">${formattedTime} Uhr</h4>
+      </div>
+      <p>${tour.description}</p>
+      ${
+        tour.link
+          ? `<a href='${tour.link}' target="_blank">Link zur Karte</a>`
+          : ""
+      }
+      
+      <form id="anmeldung-form" class="signUpForm" onsubmit="handleTourRegistration(event)">
+        <h3>Anmeldung</h3>
+        <input class="signUpForm" placeholder="Name" type="text" name="name" required ${registrationClosed ? "disabled" : ""}><br>
+        <label><input type="radio" name="fahrt" value="big" checked ${registrationClosed ? "disabled" : ""}> Große Fahrt</label>
+        <label><input type="radio" name="fahrt" value="small" ${registrationClosed ? "disabled" : ""}> Kleine Fahrt</label><br>
+        <textarea class="signUpComment" placeholder="Kommentar" name="comment" ${registrationClosed ? "disabled" : ""}></textarea>
+        <button type="submit" ${registrationClosed ? "disabled" : ""}>Anmelden</button>
+      </form>
+      ${
+        registrationClosed
+          ? `
+        <div class="registration-closed centerText">
+          <p><strong>Anmeldeschluss war am ${deadline.toLocaleDateString("de-DE")} um ${deadline.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })} Uhr.</strong></p>
+          <p>Bitte den Wanderwart für eine nachträgliche Anmeldung kontaktieren.</p>
+        </div>
+      `
+          : ""
+      }
+      <h3>Bereits angemeldet:</h3>
+      <div id="registrationContainer">
+        <div class="registrationColumn">
+          <h3>Große Fahrt</h3>
+          <ul id="anmeldeliste-gross"></ul>
+        </div>
+        <div class="registrationColumn">
+          <h3>Kleine Fahrt</h3>
+          <ul id="anmeldeliste-klein"></ul>
+        </div>
+      </div>
+
+    </div>
+  `;
+
+  loadRegistrations();
+}
+
+
+async function loadRegistrations() {
+  const listGross = document.getElementById("anmeldeliste-gross");
+  const listKlein = document.getElementById("anmeldeliste-klein");
+  let tour = currentTour;
+
+  listGross.innerHTML = "<li>Wird geladen...</li>";
+  listKlein.innerHTML = "<li>Wird geladen...</li>";
+
+  db.collection("tours")
+    .doc(tour.id)
+    .collection("registrations")
+    .get()
+    .then((querySnapshot) => {
+      console.log("Docs gefunden:", querySnapshot.size);
+
+      // Wenn gar keine Anmeldungen existieren:
+      if (querySnapshot.empty) {
+        listGross.innerHTML = "<li>Noch niemand angemeldet</li>";
+        listKlein.innerHTML = "<li>Noch niemand angemeldet</li>";
+        return;
+      }
+
+      // Inhalte zurücksetzen
+      listGross.innerHTML = "";
+      listKlein.innerHTML = "";
+
+      let hasGross = false;
+      let hasKlein = false;
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const typ = data.big ? "Große Fahrt" : "Kleine Fahrt";
+
+        const entry = `
+          <li class="registrationItem">
+            <div class="registrationItemTop">
+              <div><strong>- ${data.name}</strong></div>
+              <div>
+                <button onclick="openEditRegistrationModal('${tour.id}', '${doc.id}')">
+                  Bearbeiten
+                </button>
+              </div>
+            </div>
+            ${
+              data.comment
+                ? `<div class="registrationComment"><em>${data.comment}</em></div>`
+                : ""
+            }
+          </li>
+          <div class="divider"></div>
+        `;
+
+        if (data.big) {
+          listGross.innerHTML += entry;
+          hasGross = true;
+        } else {
+          listKlein.innerHTML += entry;
+          hasKlein = true;
+        }
+      });
+
+      // Falls in einer Kategorie keine Einträge vorhanden sind
+      if (!hasGross) listGross.innerHTML = "<li>Noch niemand angemeldet</li>";
+      if (!hasKlein) listKlein.innerHTML = "<li>Noch niemand angemeldet</li>";
+    })
+    .catch((error) => {
+      console.error("Fehler beim Laden der Anmeldungen:", error);
+      listGross.innerHTML = "<li>Fehler beim Laden</li>";
+      listKlein.innerHTML = "<li>Fehler beim Laden</li>";
+    });
+}
+
+function unregisterForTour(tourId, registrationId) {
+  if (!confirm("Diese Anmeldung wirklich löschen?")) return;
+
+  db.collection("tours")
+    .doc(tourId)
+    .collection("registrations")
+    .doc(registrationId)
+    .delete()
+    .then(() => {
+      alert("Abmeldung erfolgreich.");
+      loadRegistrations();
+    })
+    .catch((error) => {
+      console.error("Fehler beim Abmelden:", error);
+      alert("Abmeldung fehlgeschlagen.");
+    });
+}
