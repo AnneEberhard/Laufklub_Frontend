@@ -25,6 +25,15 @@ a:hover {
   text-shadow: 2px 2px 4px rgb(0, 123, 109);
 }
 
+.centerText {
+  text-align: center;
+}
+
+.redText {
+  color: red;
+  font-weight: bold;
+}
+
 h3 {
   text-align: center;
 }

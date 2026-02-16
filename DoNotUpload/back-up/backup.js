@@ -390,3 +390,97 @@ async function loadRegistrations() {
       list.innerHTML = "<li>Fehler beim Laden</li>";
     });
 }
+
+async function loadRegistrations2() {
+  const list = document.getElementById(`anmeldeliste`);
+  let tour = currentTour;
+  list.innerHTML = "<li>Wird geladen...</li>";
+
+  db.collection("tours")
+    .doc(tour.id)
+    .collection("registrations")
+    .get()
+    .then((querySnapshot) => {
+      console.log("Docs gefunden:", querySnapshot.size);
+      if (querySnapshot.empty) {
+        list.innerHTML = "<li>Noch niemand angemeldet</li>";
+        return;
+      }
+
+      list.innerHTML = "";
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const typ = data.big ? "Große Fahrt" : "Kleine Fahrt";
+        list.innerHTML += `
+          <li class="registrationItem">
+            <div class="registrationItemTop">
+              <div><strong>- ${data.name}</strong> – ${typ}</div>
+              <div>
+                <button onclick="openEditRegistrationModal('${tour.id}', '${
+          doc.id
+        }')">
+                  Bearbeiten
+                </button>
+              </div>
+            </div>
+            ${
+              data.comment
+                ? `<div class="registrationComment"><em>${data.comment}</em></div>`
+                : ""
+            }          
+          </li>
+          <div class="divider"></div>
+        `;
+      });
+    })
+    .catch((error) => {
+      console.error("Fehler beim Laden der Anmeldungen:", error);
+      list.innerHTML = "<li>Fehler beim Laden</li>";
+    });
+}
+
+async function loadNextTour2() {
+  try {
+    const today = new Date();
+
+    const querySnapshot = await db
+      .collection("tours")
+      .where("date", ">=", today)
+      .orderBy("date", "asc")
+      .limit(1)
+      .get();
+
+    if (querySnapshot.empty) {
+      console.warn("Keine kommenden Touren gefunden.");
+      renderNoUpcomingTours();
+      return;
+    }
+
+    const doc = querySnapshot.docs[0];
+    const tour = { id: doc.id, ...doc.data() };
+    currentTour = tour;
+    renderTour();
+  } catch (error) {
+    console.error("Fehler beim Laden der nächsten Tour:", error);
+  }
+}
+
+
+async function loadLatestTour() {
+  try {
+    const querySnapshot = await db
+      .collection("tours")
+      .orderBy("date", "desc")
+      .limit(1)
+      .get();
+
+    if (querySnapshot.empty) return;
+
+    const doc = querySnapshot.docs[0];
+    const tour = { id: doc.id, ...doc.data() };
+    currentTour = tour;
+    renderTour();
+  } catch (error) {
+    console.error("Fehler beim Laden der Tour:", error);
+  }
+}

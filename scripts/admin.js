@@ -7,12 +7,10 @@ async function editPage() {
   loadAllTours(isAdmin);
 }
 
-
 async function editTour(tourId) {
   const tour = await loadTourById(tourId);
   renderEditForm(tour);
 }
-
 
 async function loadTourById(tourId) {
   try {
@@ -36,9 +34,9 @@ function renderEditForm(tour) {
   const popup = document.getElementById("editTourBox");
   popup.classList.remove("dNone");
   popup.classList.add("popup-overlay");
-  
+
   const dateObj = tour.date.toDate ? tour.date.toDate() : new Date(tour.date);
-  const isoDate = dateObj.toISOString().slice(0, 16);
+  const isoDate = formatForDateTimeLocal(dateObj);
 
   popup.innerHTML = `
     <form id="editTourForm" onsubmit="handleSaveTour(event, '${tour.id}')">
@@ -54,13 +52,21 @@ function renderEditForm(tour) {
   `;
 }
 
+function formatForDateTimeLocal(date) {
+  const pad = (n) => n.toString().padStart(2, "0");
+
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
 
 function handleSaveTour(e, tourId) {
   e.preventDefault();
 
+  const inputValue = document.getElementById("editDate").value;
+  const localDate = new Date(inputValue);
+
   const updatedTour = {
     name: document.getElementById("editName").value.trim(),
-    date: new Date(document.getElementById("editDate").value),
+    date: firebase.firestore.Timestamp.fromDate(localDate),
     description: document.getElementById("editDescription").value.trim(),
   };
 
@@ -70,8 +76,8 @@ function handleSaveTour(e, tourId) {
     .then(() => {
       alert("Tour aktualisiert!");
       closeEdit();
-      document.getElementById("archive").innerHTML = '';
-      loadAllTours(true)
+      document.getElementById("archive").innerHTML = "";
+      loadAllTours(true);
     })
     .catch((err) => {
       console.error("Fehler beim Aktualisieren:", err);
@@ -109,7 +115,7 @@ function handleCreateTour(e) {
     })
     .then(() => {
       alert("Tour erfolgreich angelegt.");
-      window.location.href = "homepage.html";;
+      window.location.href = "homepage.html";
     })
     .catch((error) => {
       console.error("Fehler beim Anlegen der Tour:", error);
@@ -147,8 +153,8 @@ function renderMember(user, isAdmin) {
   container.innerHTML += `
     <div class="member" id="member-${user.id}">
       <p>Name: ${user.name || "-"} ${
-    user.isAdmin ? "<strong>(Admin)</strong>" : ""
-  }</p>
+        user.isAdmin ? "<strong>(Admin)</strong>" : ""
+      }</p>
       <p>Email: ${user.email}</p>
       ${
         isAdmin
@@ -239,9 +245,7 @@ function renderAddMember(isAdmin) {
 }
 
 function renderAddMemberForm() {
-  document.getElementById(
-    "addMemberForm"
-  ).innerHTML = `        
+  document.getElementById("addMemberForm").innerHTML = `        
         <br>
         <h3>Neues Mitglied hinzufügen</h3>
         <i>Hinweis: wird ein neues Mitglied hinzugefügt, so landet es in der Liste der 

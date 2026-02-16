@@ -75,7 +75,8 @@ function mobileRenderEditForm() {
 
 async function loadNextTour() {
   try {
-    const today = new Date();
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // heute 00:00 Uhr
 
     const querySnapshot = await db
       .collection("tours")
@@ -99,25 +100,6 @@ async function loadNextTour() {
   }
 }
 
-async function loadLatestTour() {
-  try {
-    const querySnapshot = await db
-      .collection("tours")
-      .orderBy("date", "desc")
-      .limit(1)
-      .get();
-
-    if (querySnapshot.empty) return;
-
-    const doc = querySnapshot.docs[0];
-    const tour = { id: doc.id, ...doc.data() };
-    currentTour = tour;
-    renderTour();
-  } catch (error) {
-    console.error("Fehler beim Laden der Tour:", error);
-  }
-}
-
 function renderTour() {
   const tour = currentTour;
   const container = document.getElementById("touren");
@@ -127,12 +109,23 @@ function renderTour() {
     month: "2-digit",
     year: "numeric",
   });
+  const formattedTime = dateObj.toLocaleTimeString("de-DE", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  const now = new Date();
+  const deadline = getRegistrationDeadline(dateObj);
+  const registrationClosed = now > deadline;
 
   container.innerHTML = `
-  <h2 class="tourHeader"> Unsere nächste Fahrt: </h2>
+    <p class="centerText redText">Hinweis: Anmeldenschluss ist immer am Mittwoch davor um 9 Uhr.</p>
+    <h2 class="tourHeader"> Unsere nächste Fahrt: </h2>
     <div class='tour'>
       <h2>${tour.name}</h2>
+      <div class="centerText">
       <h3>${formattedDate}</h3>
+      <h4 class="tour-time">${formattedTime} Uhr</h4>
+      </div>
       <p>${tour.description}</p>
       ${
         tour.link
@@ -142,12 +135,24 @@ function renderTour() {
       
       <form id="anmeldung-form" class="signUpForm" onsubmit="handleTourRegistration(event)">
         <h3>Anmeldung</h3>
-        <input class="signUpForm" placeholder="Name" type="text" name="name" required><br>
-        <label><input type="radio" name="fahrt" value="big" checked> Große Fahrt</label>
-        <label><input type="radio" name="fahrt" value="small"> Kleine Fahrt</label><br>
-        <textarea class="signUpComment" placeholder="Kommentar" name="comment"></textarea>
-        <button type="submit">Anmelden</button>
+        <input class="signUpForm" placeholder="Name" type="text" name="name" required ${registrationClosed ? "disabled" : ""}><br>
+        <label><input type="radio" name="fahrt" value="big" checked ${registrationClosed ? "disabled" : ""}> Große Fahrt</label>
+        <label><input type="radio" name="fahrt" value="small" ${registrationClosed ? "disabled" : ""}> Kleine Fahrt</label><br>
+        <textarea class="signUpComment" placeholder="Kommentar" name="comment" ${registrationClosed ? "disabled" : ""}></textarea>
+        <button type="submit" ${registrationClosed ? "disabled" : ""}>Anmelden</button>
       </form>
+
+      ${
+        registrationClosed
+          ? `
+        <div class="registration-closed centerText">
+          <p><strong>Anmeldeschluss war am ${deadline.toLocaleDateString("de-DE")} um ${deadline.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })} Uhr.</strong></p>
+          <p>Bitte den Wanderwart für eine nachträgliche Anmeldung kontaktieren.</p>
+        </div>
+      `
+          : ""
+      }
+
 
       <h3>Bereits angemeldet:</h3>
       <div id="registrationContainer">
@@ -165,6 +170,15 @@ function renderTour() {
   `;
 
   loadRegistrations();
+}
+
+function getRegistrationDeadline(tourDate) {
+  const deadline = new Date(tourDate);
+  deadline.setDate(deadline.getDate() - 3); // Mittwoch
+
+  deadline.setHours(9, 0, 0, 0);
+
+  return deadline;
 }
 
 function renderNoUpcomingTours() {
@@ -244,56 +258,6 @@ async function loadRegistrations() {
     });
 }
 
-
-
-async function loadRegistrations2() {
-  const list = document.getElementById(`anmeldeliste`);
-  let tour = currentTour;
-  list.innerHTML = "<li>Wird geladen...</li>";
-
-  db.collection("tours")
-    .doc(tour.id)
-    .collection("registrations")
-    .get()
-    .then((querySnapshot) => {
-      console.log("Docs gefunden:", querySnapshot.size);
-      if (querySnapshot.empty) {
-        list.innerHTML = "<li>Noch niemand angemeldet</li>";
-        return;
-      }
-
-      list.innerHTML = "";
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        const typ = data.big ? "Große Fahrt" : "Kleine Fahrt";
-        list.innerHTML += `
-          <li class="registrationItem">
-            <div class="registrationItemTop">
-              <div><strong>- ${data.name}</strong> – ${typ}</div>
-              <div>
-                <button onclick="openEditRegistrationModal('${tour.id}', '${
-          doc.id
-        }')">
-                  Bearbeiten
-                </button>
-              </div>
-            </div>
-            ${
-              data.comment
-                ? `<div class="registrationComment"><em>${data.comment}</em></div>`
-                : ""
-            }          
-          </li>
-          <div class="divider"></div>
-        `;
-      });
-    })
-    .catch((error) => {
-      console.error("Fehler beim Laden der Anmeldungen:", error);
-      list.innerHTML = "<li>Fehler beim Laden</li>";
-    });
-}
-
 function handleTourRegistration(e) {
   e.preventDefault();
   const form = e.target;
@@ -323,7 +287,7 @@ function openEditRegistrationModal(tourId, registrationId) {
 
       document.getElementById("editName").value = data.name || "";
       document.querySelector(
-        `input[name="editFahrt"][value="${data.big ? "big" : "small"}"]`
+        `input[name="editFahrt"][value="${data.big ? "big" : "small"}"]`,
       ).checked = true;
       document.getElementById("editComment").value = data.comment || "";
 
@@ -505,7 +469,6 @@ function togglePassword(button, divId) {
     button.textContent = "👁️";
   }
 }
-
 function login() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
@@ -513,15 +476,48 @@ function login() {
   auth
     .signInWithEmailAndPassword(email, password)
     .then((userCredential) => {
-      window.location.href = "homepage.html";
       console.log("Eingeloggt als: " + userCredential.user.email);
+      window.location.href = "homepage.html";
     })
     .catch((error) => {
-      console.log(error.message);
+      console.error("Login error:", error);
+
+      // iOS / IndexedDB Spezialfall
+      if (
+        error &&
+        typeof error.message === "string" &&
+        (error.message.includes("Indexed Database") ||
+          error.message.includes("indexeddb"))
+      ) {
+        document.getElementById("loginError").innerHTML =
+          "Safari hatte ein temporäres Speicherproblem.<br>" +
+          "Bitte die Seite neuladen und erneut versuchen.";
+        return;
+      }
+
+      // normale Auth-Fehler
       document.getElementById("loginError").innerHTML =
-        "Ein Fehler ist aufgetreten! Passwort vergessen? Oder ist dies die erste Anmeldung? <br> Dann bitte die Buttons unten benutzen.";
+        "Ein Fehler ist aufgetreten! Passwort vergessen?<br>" +
+        "Oder ist dies die erste Anmeldung? Dann bitte die Buttons unten benutzen.";
     });
 }
+
+//function login2() {
+//  const email = document.getElementById("email").value;
+//  const password = document.getElementById("password").value;
+//
+//  auth
+//    .signInWithEmailAndPassword(email, password)
+//    .then((userCredential) => {
+//      window.location.href = "homepage.html";
+//      console.log("Eingeloggt als: " + userCredential.user.email);
+//    })
+//    .catch((error) => {
+//      console.log(error.message);
+//      document.getElementById("loginError").innerHTML =
+//        "Ein Fehler ist aufgetreten! Passwort vergessen? Oder ist dies die erste Anmeldung? <br> Dann bitte die Buttons unten benutzen.";
+//    });
+//}
 
 function openRegisterModal() {
   document.getElementById("registerModal").style.display = "block";
