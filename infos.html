@@ -19,11 +19,12 @@
     <script src="firebase-config.js"></script>
     <script src="scripts/script.js"></script>
     <script src="scripts/admin.js"></script>
+    <script src="scripts/infos.js"></script>
     <link rel="icon" type="image/png" href="assets/img/hiking.png" />
     <link rel="stylesheet" href="styles/style.css" />
     <link rel="stylesheet" href="styles/fonts.css" />
   </head>
-  <body onload="editPage()">
+  <body onload="editInfoPage()">
     <div w3-include-html="templates/header.html"></div>
     <div w3-include-html="templates/background.html"></div>
     <div id="adminLinks">
@@ -43,18 +44,10 @@
 
     <button class="buttonLink right" onclick="logout()">Log Out</button>
     <div class="mainContainer">
-      <div class="dNone" id="editTourBox"></div>
-      <form id="createTourForm" onsubmit="handleCreateTour(event)">
-        <h2>Neue Fahrt anlegen</h2>
-        <input id="tourName" type="text" placeholder="Name" required />
-        <input id="tourDate" type="datetime-local" required />
-        <textarea id="tourDescription" placeholder="Beschreibung"></textarea>
-        <div class="buttonBox">
-          <a class="buttonLink red" href="/homepage.html">Abbrechen</a>
-          <button type="submit">Speichern</button>
-        </div>
-      </form>
-      <div id="archive"></div>
+      <div class="dNone" id="editInfoBox"></div>
+      <div id="newInfoBox"></div>
+      
+      <div id="archiveInfo"></div>
     </div>
     <div class="scrollToTopButton">
       <svg
