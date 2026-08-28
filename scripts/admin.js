@@ -50,6 +50,12 @@ async function loadTourById(tourId) {
     return tour;
   } catch (error) {
     console.error("Fehler beim Laden der Tour:", error);
+
+    Sentry.withScope(function (scope) {
+            scope.setTag("firestore_operation", "get");
+            scope.setTag("firestore_collection", "tours");
+            Sentry.captureException(error);
+        });
     return null;
   }
 }

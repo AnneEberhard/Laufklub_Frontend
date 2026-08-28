@@ -16,7 +16,6 @@ async function init() {
   renderAdminLinks(isAdmin);
 }
 
-
 /**
  * Checks Firebase auth state and resolves the current user
  * together with their admin status from Firestore.
@@ -49,7 +48,6 @@ async function checkUserAdminStatus() {
   });
 }
 
-
 /* Renders admin navigation links for desktop and mobile.
  *
  * @param {boolean} isAdmin - Whether the current user has admin rights.
@@ -76,7 +74,6 @@ function renderAdminLinks(isAdmin) {
     }`;
 }
 
-
 /**
  * Shows the mobile admin menu.
  * @returns {void}
@@ -85,7 +82,6 @@ function openAdminLinks() {
   document.getElementById("adminLinksMobileMenu").classList.remove("dNone");
 }
 
-
 /**
  * Hides the mobile admin menu.
  * @returns {void}
@@ -93,7 +89,6 @@ function openAdminLinks() {
 function closeMobileAdminLinks() {
   document.getElementById("adminLinksMobileMenu").classList.add("dNone");
 }
-
 
 /**
  * Closes the mobile admin menu and renders the edit form.
@@ -154,7 +149,6 @@ function renderTour() {
   loadRegistrations();
 }
 
-
 /**
  * Generates the HTML template for a tour, including:
  * - Name, date, time, description, optional map link
@@ -205,11 +199,15 @@ function getTourTemplate(tour) {
         <button type="submit" ${registrationClosed ? "disabled" : ""}>Anmelden</button>
       </form>
 
-      ${registrationClosed ? `
+      ${
+        registrationClosed
+          ? `
         <div class="registration-closed centerText">
           <p><strong>Anmeldeschluss war am ${deadline.toLocaleDateString("de-DE")} um ${deadline.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })} Uhr.</strong></p>
           <p>Bitte den Wanderwart für eine nachträgliche Anmeldung kontaktieren.</p>
-        </div>` : ""}
+        </div>`
+          : ""
+      }
 
       <h3>Bereits angemeldet:</h3>
       <div id="registrationContainer">
@@ -225,7 +223,6 @@ function getTourTemplate(tour) {
     </div>
   `;
 }
-
 
 /**
  * Calculates the registration deadline for a tour.
@@ -243,7 +240,6 @@ function getRegistrationDeadline(tourDate) {
   return deadline;
 }
 
-
 /**
  * Renders a message in the DOM when no upcoming tours are found.
  *
@@ -253,7 +249,6 @@ function renderNoUpcomingTours() {
   document.getElementById("touren").innerHTML = `
     <h2 class="tourHeader"> Keine kommenden Touren gefunden </h2>`;
 }
-
 
 /**
  * Loads all registrations for the current tour and renders them
@@ -303,7 +298,6 @@ async function loadRegistrations() {
   }
 }
 
-
 /**
  * Generates the HTML string for a single registration entry.
  * @param {Object} data - Registration data
@@ -335,7 +329,6 @@ function getRegistrationEntry(data, tourId, docId) {
   `;
 }
 
-
 /**
  * Renders a list of registration entries into a given container.
  * If the list is empty, shows a placeholder message.
@@ -351,10 +344,9 @@ function renderRegistrationList(listElement, registrations) {
   }
 }
 
-
 /**
  * Handles the submission of the tour registration form.
- * Prevents default form submission, reads input values, 
+ * Prevents default form submission, reads input values,
  * calls `registerForTour`, and resets the form.
  *
  * @param {Event} e - The form submit event.
@@ -370,7 +362,6 @@ function handleTourRegistration(e) {
   registerForTour(currentTour.id, name, selected, comment);
   form.reset();
 }
-
 
 /**
  * Opens the edit registration modal and fills it with data
@@ -406,7 +397,6 @@ function openEditRegistrationModal(tourId, registrationId) {
     });
 }
 
-
 /**
  * Closes the edit registration modal.
  *
@@ -416,7 +406,6 @@ function closeEditModal() {
   document.getElementById("editRegistrationModal").classList.add("dNone");
 }
 
-
 /**
  * Handles the submission of the edit registration form.
  * Updates the registration in Firestore and reloads the registrations list.
@@ -424,7 +413,7 @@ function closeEditModal() {
  * @param {Event} event - The form submit event.
  * @returns {void}
  */
-function handleEditRegistration(event) {
+async function handleEditRegistration(event) {
   event.preventDefault();
 
   const tourId = document.getElementById("editTourId").value;
@@ -434,26 +423,21 @@ function handleEditRegistration(event) {
   const fahrt = document.querySelector('input[name="editFahrt"]:checked').value;
   const comment = document.getElementById("editComment").value.trim();
 
-  db.collection("tours")
-    .doc(tourId)
-    .collection("registrations")
-    .doc(registrationId)
-    .update({
-      name: name,
-      big: fahrt === "big",
-      comment: comment,
-    })
-    .then(() => {
-      alert("Änderungen gespeichert.");
-      closeEditModal();
-      loadRegistrations();
-    })
-    .catch((err) => {
-      console.error("Fehler beim Aktualisieren:", err);
-      alert("Fehler beim Speichern.");
-    });
+  try {
+    await db
+      .collection("tours")
+      .doc(tourId)
+      .collection("registrations")
+      .doc(registrationId)
+      .update({ name: name, big: fahrt === "big", comment: comment });
+    alert("Änderungen gespeichert.");
+    closeEditModal();
+    loadRegistrations();
+  } catch (error) {
+    console.error("Fehler beim Aktualisieren:", error);
+    alert("Fehler beim Speichern.");
+  }
 }
-
 
 /**
  * Registers a participant for a tour in Firestore.
@@ -471,24 +455,21 @@ async function registerForTour(tourId, name, selected, comment) {
   const ref = db.collection("tours").doc(tourId).collection("registrations");
   const isBig = selected === "big";
 
-  ref
-    .add({
+  try {
+    await ref.add({
       name: name,
       big: isBig,
       small: !isBig,
       registeredAt: new Date().toISOString(),
       comment: comment,
-    })
-    .then(() => {
-      alert("Anmeldung erfolgreich!");
-      loadRegistrations();
-    })
-    .catch((error) => {
-      console.error("Fehler bei der Anmeldung:", error);
-      alert("Anmeldung fehlgeschlagen.");
     });
+    alert("Anmeldung erfolgreich!");
+    loadRegistrations();
+  } catch (error) {
+    console.error("Fehler bei der Anmeldung:", error);
+    alert("Anmeldung fehlgeschlagen.");
+  }
 }
-
 
 /**
  * Deletes a registration from Firestore after user confirmation.
@@ -496,28 +477,27 @@ async function registerForTour(tourId, name, selected, comment) {
  *
  * @returns {void}
  */
-function deleteRegistration() {
+async function deleteRegistration() {
   const tourId = document.getElementById("editTourId").value;
   const registrationId = document.getElementById("editRegistrationId").value;
 
   if (!confirm("Diese Person wirklich von der Fahrt abmelden?")) return;
 
-  db.collection("tours")
-    .doc(tourId)
-    .collection("registrations")
-    .doc(registrationId)
-    .delete()
-    .then(() => {
-      alert("Abgemeldet.");
-      closeEditModal();
-      loadRegistrations();
-    })
-    .catch((err) => {
-      console.error("Fehler beim Löschen:", err);
-      alert("Fehler beim Abmelden.");
-    });
+  try {
+    await db
+      .collection("tours")
+      .doc(tourId)
+      .collection("registrations")
+      .doc(registrationId)
+      .delete();
+    alert("Abgemeldet.");
+    closeEditModal();
+    loadRegistrations();
+  } catch (error) {
+    console.error("Fehler beim Löschen:", error);
+    alert("Fehler beim Abmelden.");
+  }
 }
-
 
 //Archive page
 
@@ -535,7 +515,6 @@ async function archive() {
   const { user, isAdmin } = await checkUserAdminStatus();
   loadAllTours(false);
 }
-
 
 /**
  * Loads all tours from Firestore and renders each tour in the archive.
@@ -557,7 +536,6 @@ function loadAllTours(isAdmin) {
       console.error("Fehler beim Laden der Tour:", error);
     });
 }
-
 
 /**
  * Renders a single tour in the archive section.
@@ -601,7 +579,6 @@ function renderArchiveTour(tour, isAdmin) {
     </div>
   `;
 }
-
 
 /**
  * Deletes a tour from Firestore after user confirmation
@@ -647,7 +624,6 @@ function togglePassword(button, divId) {
   }
 }
 
-
 /**
  * Performs user login with Firebase Authentication using email and password.
  * Redirects to homepage on success and displays error messages on failure.
@@ -687,7 +663,6 @@ function login() {
     });
 }
 
-
 /**
  * Opens the modal for registering a new user.
  *
@@ -696,7 +671,6 @@ function login() {
 function openRegisterUserModal() {
   document.getElementById("registerUserModal").style.display = "block";
 }
-
 
 /**
  * Closes the modal for registering a new user and clears any error messages.
@@ -707,7 +681,6 @@ function closeRegisterUserModal() {
   document.getElementById("registerUserModal").style.display = "none";
   document.getElementById("firstLoginError").innerText = "";
 }
-
 
 /**
  * Handles the first-time user registration process:
@@ -741,7 +714,6 @@ async function firstLogin() {
   submitRegistration(email, pw1, name);
 }
 
-
 /**
  * Validates the first login form input.
  *
@@ -770,7 +742,6 @@ function checkFirstLoginInForm(email, pw1, pw2) {
   }
   return { checkForm: true };
 }
-
 
 /**
  * Checks if the given email exists in the "pendingUsers" Firestore collection.
@@ -801,7 +772,6 @@ function checkPendingUser(email) {
       return { pending: false };
     });
 }
-
 
 /**
  * Submits a first-time user registration:
@@ -861,7 +831,6 @@ async function submitRegistration(email, pw1, name) {
   }
 }
 
-
 /**
  * Opens the "forgot password" modal.
  *
@@ -870,7 +839,6 @@ async function submitRegistration(email, pw1, name) {
 function openForgotModal() {
   document.getElementById("forgotModal").style.display = "block";
 }
-
 
 /**
  * Closes the "forgot password" modal and clears input and error messages.
@@ -882,7 +850,6 @@ function closeForgotModal() {
   document.getElementById("forgotEmail").innerText = "";
   document.getElementById("forgotError").innerText = "";
 }
-
 
 /**
  * Sends a password reset email via Firebase Auth and closes the modal on success.
@@ -902,7 +869,6 @@ function resetPassword() {
       alert("Fehler beim Zurücksetzen: " + error.message);
     });
 }
-
 
 /**
  * Logs out the current user via Firebase Auth and redirects to the login page.
