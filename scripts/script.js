@@ -48,7 +48,8 @@ async function checkUserAdminStatus() {
   });
 }
 
-/* Renders admin navigation links for desktop and mobile.
+/**
+ * Renders admin navigation links for desktop and mobile.
  *
  * @param {boolean} isAdmin - Whether the current user has admin rights.
  * @returns {void}

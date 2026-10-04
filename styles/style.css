@@ -102,6 +102,12 @@ summary {
   right: 16px;
 }
 
+.positionTopRight {
+  position: absolute;
+  top: 100px;
+  right: 16px;
+}
+
 .left {
   position: absolute;
   top: 32px;
@@ -253,7 +259,6 @@ ul {
   align-items: flex-start;
   justify-content: space-around;
 }
-
 
 /*edit Tour*/
 
@@ -569,5 +574,9 @@ footer {
 
   #registrationContainer {
     flex-direction: column;
+  }
+
+  .positionTopRight {
+    top: 150px;
   }
 }
