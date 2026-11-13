@@ -1,29 +1,40 @@
 <?php
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Eingaben bereinigen
-    $name    = htmlspecialchars(trim($_POST["name"] ?? ""));
-    $email   = filter_var(trim($_POST["email"] ?? ""), FILTER_VALIDATE_EMAIL);
-    $message = htmlspecialchars(trim($_POST["message"] ?? ""));
-    $privacy = isset($_POST["privacy"]);
+$recipient = 'wkillmann@t-online.de';
 
-    // Validierung
-    if (!$name || !$email || !$message || !$privacy) {
-        echo "Bitte alle Felder korrekt ausfüllen und Datenschutz akzeptieren.";
+switch ($_SERVER['REQUEST_METHOD']) {
+    case ("OPTIONS"): // Allow preflighting to take place.
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Methods: POST");
+        header("Access-Control-Allow-Headers: content-type");
         exit;
-    }
+    case ("POST"):
+        header("Access-Control-Allow-Origin: *");
 
-    // Mail vorbereiten
-    $to      = "wkillmann@t-online.de";
-    $subject = "Neue Kontaktanfrage von $name";
-    $body    = "Name: $name\nE-Mail: $email\n\nNachricht:\n$message";
-    $headers = "From: $email\r\nReply-To: $email\r\n";
+        $name    = htmlspecialchars(trim($_POST["name"] ?? ""));
+        $email   = filter_var(trim($_POST["email"] ?? ""), FILTER_VALIDATE_EMAIL);
+        $message = htmlspecialchars(trim($_POST["message"] ?? ""));
+        $privacy = isset($_POST["privacy"]);
 
-    // Mail verschicken
-    if (mail($to, $subject, $body, $headers)) {
-        //echo "Vielen Dank, $name! Die Nachricht wurde gesendet.";
-        header("Location: danke.html");
+        // Validierung
+        if (!$name || !$email || !$message || !$privacy) {
+            echo "Bitte alle Felder korrekt ausfüllen und Datenschutz akzeptieren.";
+            exit;
+        }
+
+        $subject = "Neue Kontaktanfrage von $name";
+        $headers = "From: $email";
+        $body    = "Name: $name\nE-Mail: $email\n\nNachricht:\n$message";
+
+        if (mail($recipient, $subject, $body, $headers)) {
+            //echo "Vielen Dank, $name! Die Nachricht wurde gesendet.";
+            header("Location: danke.html");
+            exit;
+        } else {
+            echo "Leider ist ein Fehler aufgetreten. Bitte versuchen Sie später erneut.";
+        }
+        break;
+    default:
+        header("Allow: POST", true, 405);
         exit;
-    } else {
-        echo "Leider ist ein Fehler aufgetreten. Bitte versuchen Sie später erneut.";
-    }
 }
+?>
