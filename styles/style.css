@@ -75,6 +75,14 @@ button:hover {
   color: lightgrey;
 }
 
+.form-trap {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
 .red {
   background-color: rgb(172, 17, 37) !important;
 }
