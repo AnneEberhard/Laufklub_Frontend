@@ -1,4 +1,3 @@
-
 <?php
 
 $recipient = 'wkillmann@t-online.de';
@@ -32,7 +31,7 @@ if ($started <= 0 || time() - $started < 3) {
 if (
     $name === '' ||
     strlen($name) > 100 ||
-    !$email = filter_var($email, FILTER_VALIDATE_EMAIL) ||
+    !filter_var($email, FILTER_VALIDATE_EMAIL) ||
     strlen($message) < 3 ||
     strlen($message) > 5000 ||
     !$privacy
@@ -100,11 +99,11 @@ $body .= "Nachricht:\n$message";
 
 // 6. E-Mail versenden
 if (mail($recipient, $subject, $body, implode("\r\n", $headers))) {
-    header('Location: danke.html');
+    header('Location: /danke.html', true, 303);
     exit;
+} else {
+    http_response_code(500);
+    exit('Leider ist beim Versand ein Fehler aufgetreten.');
 }
-
-http_response_code(500);
-echo 'Leider ist ein Fehler aufgetreten.';
 
 ?>
